@@ -38,7 +38,7 @@ export default function HeroSection() {
       <video
         ref={videoRef}
         className="absolute inset-0 w-full h-full object-cover opacity-30"
-        src="/video/Super_Move/GWEN-Desperation-4k-anim.mp4"
+        src="/video/CutScene_SE/video_summoner_4_skill_1_skin_2.mp4"
         autoPlay
         muted
         loop
