@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Rajdhani } from "next/font/google";
+import { Geist, Orbitron, Rajdhani } from "next/font/google";
 import "./globals.css";
 import ClickSpark from "@/components/ClickSpark";
 
@@ -14,6 +14,12 @@ const rajdhani = Rajdhani({
   weight: ["500", "600", "700"],
 });
 
+const orbitron = Orbitron({
+  variable: "--font-orbitron",
+  subsets: ["latin"],
+  weight: ["500", "700", "800"],
+});
+
 export const metadata: Metadata = {
   title: "TD Games — 2D Art & Animation Studio",
   description:
@@ -26,7 +32,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${geist.variable} ${rajdhani.variable} h-full antialiased`}>
+    <html lang="en" className={`${geist.variable} ${rajdhani.variable} ${orbitron.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col bg-black text-white">
         <ClickSpark />
         {children}
