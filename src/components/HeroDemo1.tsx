@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useEffect, useRef, useState, useCallback } from "react";
 import type React from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useHeroModeListener, useCardRotateListener, useCardSpacingListener } from "./LayoutWidthControl";
+import { useHeroModeListener, useCardRotateListener, useCardSpacingListener, useCardSizeListener, useBgOverlayListener, useCardDimListener, useCardVignetteListener } from "./LayoutWidthControl";
 
 const videoList = [
   {
@@ -13,7 +13,7 @@ const videoList = [
     label: "Skin 2 — I",
     path: "/video/CutScene_SE/video_summoner_1_skill_1_skin_2.mp4",
     category: "CutScene",
-    thumbnail: "/video/CutScene_SE/1.png",
+    thumbnail: "/video/CutScene_SE/1big.gif",
   },
   {
     id: 2,
@@ -21,7 +21,7 @@ const videoList = [
     label: "Skin 2 — III",
     path: "/video/CutScene_SE/video_summoner_3_skill_1_skin_2.mp4",
     category: "CutScene",
-    thumbnail: "/video/CutScene_SE/2.png",
+    thumbnail: "/video/CutScene_SE/2big.gif",
   },
   {
     id: 3,
@@ -29,7 +29,7 @@ const videoList = [
     label: "Skin 2 — IV",
     path: "/video/CutScene_SE/video_summoner_4_skill_1_skin_2.mp4",
     category: "CutScene",
-    thumbnail: "/video/CutScene_SE/3.png",
+    thumbnail: "/video/CutScene_SE/3big.gif",
   },
   {
     id: 4,
@@ -55,12 +55,16 @@ function ThumbnailCard({
   onClick,
   index,
   cardRef,
+  cardDim = 55,
+  cardVignette = true,
 }: {
   video: (typeof videoList)[0];
   isActive: boolean;
   onClick: () => void;
   index: number;
   cardRef?: (el: HTMLButtonElement | null) => void;
+  cardDim?: number;
+  cardVignette?: boolean;
 }) {
   return (
     <motion.button
@@ -90,9 +94,8 @@ function ThumbnailCard({
         />
 
         <div
-          className={`absolute inset-0 transition-all duration-300 ${
-            isActive ? "bg-black/8" : "bg-black/55 group-hover:bg-black/20"
-          }`}
+          className={`absolute inset-0 transition-all duration-300 ${isActive ? "bg-black/8" : ""}`}
+          style={!isActive ? { backgroundColor: `rgba(0,0,0,${cardDim/100})` } : {}}
         />
 
         {isActive && (
@@ -106,7 +109,9 @@ function ThumbnailCard({
           </>
         )}
 
-        <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-black via-black/75 to-transparent" />
+        {cardVignette && (
+          <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-black/60 via-black/30 to-transparent" />
+        )}
 
         <div className="absolute top-3 left-4 flex items-center gap-2">
           <div className="flex flex-col gap-0.5">
@@ -183,7 +188,7 @@ function ThumbnailCard({
 }
 
 function FanStack({
-  videoList, currentIdx, switchVideo, cardRefs, rotatePerStep, spacingPerStep,
+  videoList, currentIdx, switchVideo, cardRefs, rotatePerStep, spacingPerStep, cardSizeVal, cardDim, cardVignette,
 }: {
   videoList: { id: number; name: string; label: string; path: string; category: string; thumbnail: string }[];
   currentIdx: number;
@@ -191,50 +196,102 @@ function FanStack({
   cardRefs: React.MutableRefObject<(HTMLButtonElement | null)[]>;
   rotatePerStep: number;
   spacingPerStep: number;
+  cardSizeVal: number;
+  cardDim: number;
+  cardVignette: boolean;
 }) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const activeCardRef = useRef<HTMLDivElement>(null);
   const dragStartX = useRef<number | null>(null);
-  const [dragX, setDragX] = useState(0);
-  const wasDragging = useRef(false);
-  const THRESHOLD = 80;
+  const dragMoved = useRef(false);
+  const isDraggingRef = useRef(false);
+  const THRESHOLD = 60;
+  const n = videoList.length;
+
+  // Compute base transform for a card (no drag)
+  const getBaseTransform = (i: number, activeIdx: number, dragXVal = 0) => {
+    let offset = i - activeIdx;
+    if (offset > Math.floor(n / 2)) offset -= n;
+    if (offset < -Math.floor(n / 2)) offset += n;
+    const absOffset = Math.abs(offset);
+    const isActive = offset === 0;
+    const baseX = offset * spacingPerStep + (isActive ? dragXVal : 0);
+    const baseY = absOffset * 10;
+    const baseScale = 1 - absOffset * 0.08;
+    const baseRotate = offset * rotatePerStep + (isActive ? (dragXVal / 160) * -12 : 0);
+    return {
+      transform: `translateX(calc(-50% + ${baseX}px)) translateY(${baseY}px) rotate(${baseRotate}deg) scale(${baseScale * cardSizeVal})`,
+      zIndex: isActive ? 20 : 10 - absOffset,
+    };
+  };
 
   const onPointerDown = (e: React.PointerEvent) => {
     dragStartX.current = e.clientX;
-    wasDragging.current = false;
+    dragMoved.current = false;
+    isDraggingRef.current = false;
     (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+    // disable transition on active card for instant response
+    if (activeCardRef.current) activeCardRef.current.style.transition = "none";
   };
 
   const onPointerMove = (e: React.PointerEvent) => {
     if (dragStartX.current === null) return;
     const delta = e.clientX - dragStartX.current;
-    if (Math.abs(delta) > 8) wasDragging.current = true;
-    setDragX(Math.max(-160, Math.min(160, delta)));
+    if (Math.abs(delta) > 6) { dragMoved.current = true; isDraggingRef.current = true; }
+    if (!dragMoved.current) return;
+    // Direct DOM update — zero re-render
+    if (activeCardRef.current) {
+      const { transform } = getBaseTransform(currentIdx, currentIdx, Math.max(-160, Math.min(160, delta)));
+      activeCardRef.current.style.transform = transform;
+    }
+    if (containerRef.current) containerRef.current.style.cursor = "grabbing";
   };
 
   const onPointerUp = (e: React.PointerEvent) => {
     if (dragStartX.current === null) return;
     const delta = e.clientX - dragStartX.current;
-    if (wasDragging.current && Math.abs(delta) >= THRESHOLD) {
-      if (delta < 0 && currentIdx < videoList.length - 1) switchVideo(currentIdx + 1);
-      if (delta > 0 && currentIdx > 0) switchVideo(currentIdx - 1);
+
+    // restore transition
+    if (activeCardRef.current) activeCardRef.current.style.transition = "";
+    if (containerRef.current) containerRef.current.style.cursor = "";
+
+    if (!dragMoved.current) {
+      const target = document.elementFromPoint(e.clientX, e.clientY);
+      const cardEl = target?.closest("[data-card-index]");
+      if (cardEl) {
+        const idx = parseInt(cardEl.getAttribute("data-card-index") || "-1");
+        if (idx >= 0) switchVideo(idx);
+      }
+    } else if (Math.abs(delta) >= THRESHOLD) {
+      if (delta < 0) switchVideo((currentIdx + 1) % n);
+      if (delta > 0) switchVideo((currentIdx - 1 + n) % n);
+    } else {
+      // snap back
+      if (activeCardRef.current) {
+        const { transform } = getBaseTransform(currentIdx, currentIdx, 0);
+        activeCardRef.current.style.transform = transform;
+      }
     }
     dragStartX.current = null;
-    setDragX(0);
-    wasDragging.current = false;
+    dragMoved.current = false;
+    isDraggingRef.current = false;
   };
 
   const onPointerLeave = () => {
     if (dragStartX.current !== null) {
+      if (activeCardRef.current) { activeCardRef.current.style.transition = ""; }
+      if (containerRef.current) containerRef.current.style.cursor = "";
       dragStartX.current = null;
-      setDragX(0);
-      wasDragging.current = false;
-      setTimeout(() => { isDragging.current = false; }, 50);
+      dragMoved.current = false;
+      isDraggingRef.current = false;
     }
   };
 
   return (
     <div
+      ref={containerRef}
       className="relative select-none"
-      style={{ width: "340px", height: "320px", cursor: dragX !== 0 ? "grabbing" : "grab", touchAction: "none" }}
+      style={{ width: "340px", height: "320px", cursor: "grab", touchAction: "none" }}
       onPointerDown={onPointerDown}
       onPointerMove={onPointerMove}
       onPointerUp={onPointerUp}
@@ -254,40 +311,30 @@ function FanStack({
       {[...videoList].reverse().map((video, revI) => {
         const i = videoList.length - 1 - revI;
         const isActive = currentIdx === i;
-        const offset = i - currentIdx;
-        const absOffset = Math.abs(offset);
-
-        // base fan position
-        const baseRotate = offset * rotatePerStep;
-        const baseX = offset * spacingPerStep;
-        const baseY = absOffset * 10;
-        const baseScale = 1 - absOffset * 0.08;
-
-        // drag influence: CHỈ card active follow tay, các card khác giữ nguyên
-        const dragInfluence = isActive ? dragX : 0;
-        const dragRotate = isActive ? (dragX / 160) * -12 : 0;
-
-        const finalX = baseX + dragInfluence;
-        const finalRotate = baseRotate + dragRotate;
-        const zIndex = isActive ? 20 : 10 - absOffset;
+        const { transform, zIndex } = getBaseTransform(i, currentIdx, 0);
 
         return (
           <div
             key={video.id}
+            data-card-index={i}
+            ref={isActive ? activeCardRef : undefined}
             className="absolute bottom-0 left-1/2"
             style={{
               zIndex,
-              transform: `translateX(calc(-50% + ${finalX}px)) translateY(${baseY}px) rotate(${finalRotate}deg) scale(calc(${baseScale} * var(--hero-card-size, 1)))`,
-              transition: dragX !== 0 ? "none" : "transform 0.4s cubic-bezier(0.34,1.56,0.64,1)",
+              transform,
+              transition: "transform 0.4s cubic-bezier(0.34,1.56,0.64,1)",
               transformOrigin: "bottom center",
+              willChange: "transform",
             }}
           >
             <ThumbnailCard
               video={video}
               isActive={isActive}
-              onClick={() => { if (!wasDragging.current) switchVideo(i); }}
+              onClick={() => {}}
               index={i}
               cardRef={(el) => { cardRefs.current[i] = el; }}
+              cardDim={cardDim}
+              cardVignette={cardVignette}
             />
           </div>
         );
@@ -304,6 +351,10 @@ export default function HeroDemo1() {
   const heroMode = useHeroModeListener();
   const cardRotate = useCardRotateListener();
   const cardSpacing = useCardSpacingListener();
+  const cardSizeVal = useCardSizeListener();
+  const bgOverlay = useBgOverlayListener();
+  const cardDim = useCardDimListener();
+  const cardVignette = useCardVignetteListener();
 
   const currentVideo = videoList[currentIdx];
 
@@ -349,7 +400,9 @@ export default function HeroDemo1() {
       />
 
       <div className="absolute inset-0 bg-gradient-to-r from-[#0a0a0a]/88 via-[#0a0a0a]/45 to-transparent" />
-      <div className="absolute bottom-0 left-0 right-0 h-64 bg-gradient-to-t from-[#0a0a0a] via-[#0a0a0a]/70 to-transparent" />
+      {bgOverlay > 0 && (
+        <div className="absolute inset-0 bg-black" style={{ opacity: bgOverlay / 100 }} />
+      )}
 
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
         <div className="absolute top-28 left-[44%] w-px h-20 bg-gradient-to-b from-transparent via-amber-400/15 to-transparent" />
@@ -508,6 +561,9 @@ export default function HeroDemo1() {
               cardRefs={cardRefs}
               rotatePerStep={cardRotate}
               spacingPerStep={cardSpacing}
+              cardSizeVal={cardSizeVal}
+              cardDim={cardDim}
+              cardVignette={cardVignette}
             />
           </div>
         </div>

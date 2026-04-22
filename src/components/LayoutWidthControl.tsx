@@ -50,6 +50,51 @@ export function useCardSpacingListener(): number {
   return val;
 }
 
+const CARD_SIZE_EVENT = "card-size-change";
+const BG_OVERLAY_EVENT = "bg-overlay-change";
+const CARD_DIM_EVENT = "card-dim-change";
+const CARD_VIGNETTE_EVENT = "card-vignette-change";
+
+export function useCardSizeListener(): number {
+  const [val, setVal] = useState(1.3);
+  useEffect(() => {
+    const handler = (e: Event) => setVal((e as CustomEvent<number>).detail);
+    window.addEventListener(CARD_SIZE_EVENT, handler);
+    return () => window.removeEventListener(CARD_SIZE_EVENT, handler);
+  }, []);
+  return val;
+}
+
+export function useBgOverlayListener(): number {
+  const [val, setVal] = useState(0); // 0 = nguyên bản
+  useEffect(() => {
+    const handler = (e: Event) => setVal((e as CustomEvent<number>).detail);
+    window.addEventListener(BG_OVERLAY_EVENT, handler);
+    return () => window.removeEventListener(BG_OVERLAY_EVENT, handler);
+  }, []);
+  return val;
+}
+
+export function useCardDimListener(): number {
+  const [val, setVal] = useState(55);
+  useEffect(() => {
+    const handler = (e: Event) => setVal((e as CustomEvent<number>).detail);
+    window.addEventListener(CARD_DIM_EVENT, handler);
+    return () => window.removeEventListener(CARD_DIM_EVENT, handler);
+  }, []);
+  return val;
+}
+
+export function useCardVignetteListener(): boolean {
+  const [val, setVal] = useState(true);
+  useEffect(() => {
+    const handler = (e: Event) => setVal((e as CustomEvent<boolean>).detail);
+    window.addEventListener(CARD_VIGNETTE_EVENT, handler);
+    return () => window.removeEventListener(CARD_VIGNETTE_EVENT, handler);
+  }, []);
+  return val;
+}
+
 const quoteOptions: { id: QuoteStyle; label: string }[] = [
   { id: "amber-clip",   label: "Amber Clip"  },
   { id: "white-round",  label: "White Round" },
@@ -84,8 +129,11 @@ export default function LayoutWidthControl() {
   const [textY, setTextY]         = useState(-68);
   const [cardsY, setCardsY]       = useState(36);
   const [cardSize, setCardSize]   = useState(130);
-  const [cardRotate, setCardRotate] = useState(6);   // degrees per offset
-  const [cardSpacing, setCardSpacing] = useState(28); // px per offset
+  const [cardRotate, setCardRotate] = useState(6);
+  const [cardSpacing, setCardSpacing] = useState(28);
+  const [bgOverlay, setBgOverlay] = useState(0);
+  const [cardDim, setCardDim] = useState(55);
+  const [cardVignette, setCardVignette] = useState(true);
   const [heroMode, setHeroModeState]   = useState<HeroMode>("cyber");
   const [quoteStyle, setQuoteStyleState] = useState<QuoteStyle>("amber-clip");
 
@@ -95,6 +143,7 @@ export default function LayoutWidthControl() {
     r.setProperty("--hero-text-y",     `${textY}px`);
     r.setProperty("--hero-cards-y",    `${cardsY}px`);
     r.setProperty("--hero-card-size",  `${cardSize / 100}`);
+    window.dispatchEvent(new CustomEvent(CARD_SIZE_EVENT, { detail: cardSize / 100 }));
     r.setProperty("--hero-card-rotate",`${cardRotate}`);
     r.setProperty("--hero-card-spacing",`${cardSpacing}`);
   }, [width, textY, cardsY, cardSize, cardRotate, cardSpacing]);
@@ -102,14 +151,11 @@ export default function LayoutWidthControl() {
   const setHeroMode   = (m: HeroMode)   => { setHeroModeState(m);   window.dispatchEvent(new CustomEvent(HERO_MODE_EVENT,   { detail: m })); };
   const setQuoteStyle = (s: QuoteStyle) => { setQuoteStyleState(s); window.dispatchEvent(new CustomEvent(QUOTE_STYLE_EVENT, { detail: s })); };
 
-  const handleCardRotate = (v: number) => {
-    setCardRotate(v);
-    window.dispatchEvent(new CustomEvent(CARD_ROTATE_EVENT, { detail: v }));
-  };
-  const handleCardSpacing = (v: number) => {
-    setCardSpacing(v);
-    window.dispatchEvent(new CustomEvent(CARD_SPACING_EVENT, { detail: v }));
-  };
+  const handleCardRotate = (v: number) => { setCardRotate(v); window.dispatchEvent(new CustomEvent(CARD_ROTATE_EVENT, { detail: v })); };
+  const handleCardSpacing = (v: number) => { setCardSpacing(v); window.dispatchEvent(new CustomEvent(CARD_SPACING_EVENT, { detail: v })); };
+  const handleBgOverlay = (v: number) => { setBgOverlay(v); window.dispatchEvent(new CustomEvent(BG_OVERLAY_EVENT, { detail: v })); };
+  const handleCardDim = (v: number) => { setCardDim(v); window.dispatchEvent(new CustomEvent(CARD_DIM_EVENT, { detail: v })); };
+  const handleCardVignette = (v: boolean) => { setCardVignette(v); window.dispatchEvent(new CustomEvent(CARD_VIGNETTE_EVENT, { detail: v })); };
 
   return (
     <div className="fixed bottom-6 left-6 z-[9999] flex flex-col items-start gap-2">
@@ -135,6 +181,23 @@ export default function LayoutWidthControl() {
 
           {/* Card spacing */}
           <Slider label="Card Spacing" value={cardSpacing} min={0} max={80} step={4} unit="px" onChange={handleCardSpacing} />
+
+          {/* BG Overlay */}
+          <Slider label="BG Overlay" value={bgOverlay} min={0} max={80} step={5} unit="%" onChange={handleBgOverlay} />
+
+          {/* Card Dim */}
+          <Slider label="Card Dim" value={cardDim} min={0} max={80} step={5} unit="%" onChange={handleCardDim} />
+
+          {/* Card Vignette */}
+          <div className="flex items-center justify-between">
+            <span className="text-white/50 text-[10px] uppercase tracking-widest">Card Vignette</span>
+            <button
+              onClick={() => handleCardVignette(!cardVignette)}
+              className={`w-10 h-5 rounded-full transition-all relative ${cardVignette ? "bg-amber-400" : "bg-white/15"}`}
+            >
+              <div className={`absolute top-0.5 w-4 h-4 rounded-full bg-white transition-all ${cardVignette ? "left-5" : "left-0.5"}`} />
+            </button>
+          </div>
 
           <div className="h-px bg-white/8" />
 
