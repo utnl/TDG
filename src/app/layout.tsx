@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Orbitron, Rajdhani } from "next/font/google";
+import { Geist, Orbitron, Rajdhani, Barlow_Condensed, Nunito_Sans } from "next/font/google";
 import "./globals.css";
 import ClickSpark from "@/components/ClickSpark";
 
@@ -20,6 +20,18 @@ const orbitron = Orbitron({
   weight: ["500", "700", "800"],
 });
 
+const barlowCondensed = Barlow_Condensed({
+  variable: "--font-barlow-condensed",
+  subsets: ["latin"],
+  weight: ["500", "600", "700", "800"],
+});
+
+const nunitoSans = Nunito_Sans({
+  variable: "--font-nunito-sans",
+  subsets: ["latin"],
+  weight: ["400", "600", "700", "800"],
+});
+
 export const metadata: Metadata = {
   title: "TD Games — 2D Art & Animation Studio",
   description:
@@ -32,7 +44,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${geist.variable} ${rajdhani.variable} ${orbitron.variable} h-full antialiased`}>
+    <html lang="en" className={`${geist.variable} ${rajdhani.variable} ${orbitron.variable} ${barlowCondensed.variable} ${nunitoSans.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col bg-black text-white">
         <ClickSpark />
         {children}

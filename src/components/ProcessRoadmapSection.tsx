@@ -52,7 +52,7 @@ export default function ProcessRoadmapSection() {
         <div className="absolute right-[12%] bottom-20 h-px w-14 bg-amber-300/35" />
       </div>
 
-      <div className="relative mx-auto w-full max-w-6xl px-6 lg:px-10">
+      <div className="relative mx-auto" style={{ width: "var(--layout-width, 85%)" }}>
         <motion.div
           className="mb-14"
           initial={{ opacity: 0, y: 20 }}

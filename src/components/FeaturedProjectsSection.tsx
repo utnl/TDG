@@ -281,7 +281,7 @@ export default function FeaturedProjectsSection() {
         <div className="absolute right-[9%] bottom-24 h-px w-16 bg-amber-300/35" />
       </div>
 
-      <div className="relative mx-auto w-full max-w-6xl px-6 lg:px-10">
+      <div className="relative mx-auto" style={{ width: "var(--layout-width, 85%)" }}>
         <motion.div
           className="mb-10 lg:mb-12"
           initial={{ opacity: 0, y: 22 }}

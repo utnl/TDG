@@ -458,19 +458,14 @@ export default function HeroStudio() {
               >
                 {currentVideo.big ? (
                   <div className="relative w-full h-full flex items-center justify-center">
-                    {/* Glow background */}
                     <div className="absolute inset-0 bg-gradient-radial from-amber-400/10 via-amber-400/5 to-transparent blur-2xl" />
-
-                    {/* Main gif container */}
                     <div
                       className="relative overflow-hidden bg-black/20 backdrop-blur-sm border border-amber-400/30"
                       style={{
-                        clipPath:
-                          "polygon(8% 0%, 100% 0%, 100% 92%, 92% 100%, 0% 100%, 0% 8%)",
+                        clipPath: "polygon(8% 0%, 100% 0%, 100% 92%, 92% 100%, 0% 100%, 0% 8%)",
                         width: "85%",
                         height: "85%",
-                        boxShadow:
-                          "0 0 40px rgba(251,191,36,0.3), inset 0 0 20px rgba(251,191,36,0.1)",
+                        boxShadow: "0 0 40px rgba(251,191,36,0.3), inset 0 0 20px rgba(251,191,36,0.1)",
                       }}
                     >
                       {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -478,87 +473,30 @@ export default function HeroStudio() {
                         src={currentVideo.big}
                         alt={currentVideo.name}
                         className="w-full h-full object-cover"
-                        style={{
-                          filter:
-                            "brightness(1.1) contrast(1.05) saturate(1.1)",
-                        }}
+                        style={{ filter: "brightness(1.1) contrast(1.05) saturate(1.1)" }}
                       />
-
-                      {/* Inner glow overlay */}
                       <div className="absolute inset-0 bg-gradient-to-t from-amber-900/20 via-transparent to-transparent" />
-
-                      {/* Animated border */}
-                      <svg
-                        className="absolute inset-0 w-full h-full pointer-events-none"
-                        viewBox="0 0 100 100"
-                        preserveAspectRatio="none"
-                      >
-                        <path
-                          d="M 8 0 L 100 0 L 100 92 L 92 100 L 0 100 L 0 8 Z"
-                          fill="none"
-                          stroke="#fbbf24"
-                          strokeWidth="0.8"
-                          vectorEffect="non-scaling-stroke"
-                          className="animate-pulse"
-                          style={{
-                            filter: "drop-shadow(0 0 6px rgba(251,191,36,0.8))",
-                            strokeDasharray: "200",
-                            strokeDashoffset: "0",
-                            animation: "border-glow 3s ease-in-out infinite",
-                          }}
-                        />
+                      <svg className="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 100 100" preserveAspectRatio="none">
+                        <path d="M 8 0 L 100 0 L 100 92 L 92 100 L 0 100 L 0 8 Z" fill="none" stroke="#fbbf24" strokeWidth="0.8" vectorEffect="non-scaling-stroke" style={{ filter: "drop-shadow(0 0 6px rgba(251,191,36,0.8))", strokeDasharray: "200", strokeDashoffset: "0", animation: "border-glow 3s ease-in-out infinite" }} />
                       </svg>
-
-                      {/* Corner accents */}
                       <div className="absolute top-2 left-2 w-3 h-3 border-l-2 border-t-2 border-amber-400/60" />
                       <div className="absolute top-2 right-2 w-3 h-3 border-r-2 border-t-2 border-amber-400/60" />
                       <div className="absolute bottom-2 left-2 w-3 h-3 border-l-2 border-b-2 border-amber-400/60" />
                       <div className="absolute bottom-2 right-2 w-3 h-3 border-r-2 border-b-2 border-amber-400/60" />
                     </div>
-
-                    {/* Floating particles effect */}
                     <div className="absolute inset-0 pointer-events-none">
                       {[...Array(6)].map((_, i) => (
-                        <div
-                          key={i}
-                          className="absolute w-1 h-1 bg-amber-400/40 rounded-full"
-                          style={{
-                            left: `${20 + i * 12}%`,
-                            top: `${30 + (i % 3) * 20}%`,
-                            animation: `float-${(i % 3) + 1} ${3 + i * 0.5}s ease-in-out infinite`,
-                            animationDelay: `${i * 0.3}s`,
-                          }}
-                        />
+                        <div key={i} className="absolute w-1 h-1 bg-amber-400/40 rounded-full" style={{ left: `${20 + i * 12}%`, top: `${30 + (i % 3) * 20}%`, animation: `float-${(i % 3) + 1} ${3 + i * 0.5}s ease-in-out infinite`, animationDelay: `${i * 0.3}s` }} />
                       ))}
                     </div>
                   </div>
                 ) : (
-                  <div
-                    className="h-80 w-60 overflow-hidden"
-                    style={{
-                      clipPath:
-                        "polygon(15% 0%, 100% 0%, 100% 95%, 85% 100%, 0% 100%, 0% 5%)",
-                    }}
-                  >
+                  <div className="h-80 w-60 overflow-hidden" style={{ clipPath: "polygon(15% 0%, 100% 0%, 100% 95%, 85% 100%, 0% 100%, 0% 5%)" }}>
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={currentVideo.thumbnail}
-                      alt={currentVideo.name}
-                      className="w-full h-full object-cover"
-                    />
+                    <img src={currentVideo.thumbnail} alt={currentVideo.name} className="w-full h-full object-cover" />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
-                    <svg
-                      className="absolute inset-0 w-full h-full pointer-events-none"
-                      viewBox="0 0 100 100"
-                      preserveAspectRatio="none"
-                    >
-                      <path
-                        d="M 15 0 L 100 0 L 100 95 L 85 100 L 0 100 L 0 5 Z"
-                        fill="none"
-                        stroke="rgba(251,191,36,0.5)"
-                        strokeWidth="1.5"
-                        vectorEffect="non-scaling-stroke"
-                      />
+                    <svg className="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 100 100" preserveAspectRatio="none">
+                      <path d="M 15 0 L 100 0 L 100 95 L 85 100 L 0 100 L 0 5 Z" fill="none" stroke="rgba(251,191,36,0.5)" strokeWidth="1.5" vectorEffect="non-scaling-stroke" />
                     </svg>
                   </div>
                 )}
@@ -573,26 +511,16 @@ export default function HeroStudio() {
               transition={{ delay: 0.3, duration: 0.4 }}
               className="absolute -bottom-8 left-0 right-0 text-center z-20"
             >
-              <div
-                className="text-amber-400 text-sm font-black tracking-[0.2em] uppercase mb-1"
-                style={{
-                  fontFamily: "var(--font-rajdhani)",
-                  textShadow:
-                    "0 0 15px rgba(251,191,36,0.8), 0 0 30px rgba(251,191,36,0.4)",
-                }}
-              >
+              <div className="text-amber-400 text-sm font-black tracking-[0.2em] uppercase mb-1" style={{ fontFamily: "var(--font-rajdhani)", textShadow: "0 0 15px rgba(251,191,36,0.8), 0 0 30px rgba(251,191,36,0.4)" }}>
                 {currentVideo.name}
               </div>
-              <div
-                className="text-white/50 text-[10px] tracking-widest uppercase"
-                style={{ fontFamily: "var(--font-rajdhani)" }}
-              >
+              <div className="text-white/50 text-[10px] tracking-widest uppercase" style={{ fontFamily: "var(--font-rajdhani)" }}>
                 {currentVideo.label}
               </div>
             </motion.div>
           </div>
 
-          {/* Cards row - tách riêng và có pointer-events */}
+          {/* Cards row */}
           <div className="flex items-end justify-center gap-2 pointer-events-auto">
             {videoList.map((video, i) => (
               <ThumbnailCard
@@ -601,9 +529,7 @@ export default function HeroStudio() {
                 isActive={currentIdx === i}
                 onClick={() => switchVideo(i)}
                 index={i}
-                cardRef={(el) => {
-                  cardRefs.current[i] = el;
-                }}
+                cardRef={(el) => { cardRefs.current[i] = el; }}
               />
             ))}
           </div>

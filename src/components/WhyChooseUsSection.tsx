@@ -37,7 +37,7 @@ export default function WhyChooseUsSection() {
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_85%_75%,rgba(245,158,11,0.08),transparent_38%)]" />
       <div className="absolute inset-x-0 top-0 h-px bg-white/12" />
 
-      <div className="relative mx-auto w-full max-w-6xl px-6 lg:px-10">
+      <div className="relative mx-auto" style={{ width: "var(--layout-width, 85%)" }}>
         <motion.div
           className="mb-12 lg:mb-14"
           initial={{ opacity: 0, y: 24 }}

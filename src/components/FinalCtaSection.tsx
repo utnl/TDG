@@ -18,7 +18,7 @@ export default function FinalCtaSection() {
         <div className="absolute right-[12%] bottom-24 h-px w-16 bg-amber-300/34" />
       </div>
 
-      <div className="relative mx-auto w-full max-w-6xl px-6 lg:px-10">
+      <div className="relative mx-auto" style={{ width: "var(--layout-width, 85%)" }}>
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
