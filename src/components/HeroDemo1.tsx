@@ -205,6 +205,7 @@ function FanStack({
   const dragStartX = useRef<number | null>(null);
   const dragMoved = useRef(false);
   const isDraggingRef = useRef(false);
+  const [dragOffset, setDragOffset] = useState(0);
   const THRESHOLD = 60;
   const n = videoList.length;
 
@@ -220,7 +221,10 @@ function FanStack({
     const baseScale = 1 - absOffset * 0.08;
     const baseRotate = offset * rotatePerStep + (isActive ? (dragXVal / 160) * -12 : 0);
     return {
-      transform: `translateX(calc(-50% + ${baseX}px)) translateY(${baseY}px) rotate(${baseRotate}deg) scale(${baseScale * cardSizeVal})`,
+      x: baseX,
+      y: baseY,
+      scale: baseScale * cardSizeVal,
+      rotate: baseRotate,
       zIndex: isActive ? 20 : 10 - absOffset,
     };
   };
@@ -230,20 +234,21 @@ function FanStack({
     dragMoved.current = false;
     isDraggingRef.current = false;
     (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
-    // disable transition on active card for instant response
-    if (activeCardRef.current) activeCardRef.current.style.transition = "none";
   };
 
   const onPointerMove = (e: React.PointerEvent) => {
     if (dragStartX.current === null) return;
     const delta = e.clientX - dragStartX.current;
-    if (Math.abs(delta) > 6) { dragMoved.current = true; isDraggingRef.current = true; }
-    if (!dragMoved.current) return;
-    // Direct DOM update — zero re-render
-    if (activeCardRef.current) {
-      const { transform } = getBaseTransform(currentIdx, currentIdx, Math.max(-160, Math.min(160, delta)));
-      activeCardRef.current.style.transform = transform;
+    if (Math.abs(delta) > 6) { 
+      dragMoved.current = true; 
+      isDraggingRef.current = true; 
     }
+    if (!dragMoved.current) return;
+    
+    // Update drag offset for smooth animation
+    const clampedDelta = Math.max(-160, Math.min(160, delta));
+    setDragOffset(clampedDelta);
+    
     if (containerRef.current) containerRef.current.style.cursor = "grabbing";
   };
 
@@ -251,8 +256,6 @@ function FanStack({
     if (dragStartX.current === null) return;
     const delta = e.clientX - dragStartX.current;
 
-    // restore transition
-    if (activeCardRef.current) activeCardRef.current.style.transition = "";
     if (containerRef.current) containerRef.current.style.cursor = "";
 
     if (!dragMoved.current) {
@@ -265,13 +268,10 @@ function FanStack({
     } else if (Math.abs(delta) >= THRESHOLD) {
       if (delta < 0) switchVideo((currentIdx + 1) % n);
       if (delta > 0) switchVideo((currentIdx - 1 + n) % n);
-    } else {
-      // snap back
-      if (activeCardRef.current) {
-        const { transform } = getBaseTransform(currentIdx, currentIdx, 0);
-        activeCardRef.current.style.transform = transform;
-      }
     }
+    
+    // Reset drag offset with smooth animation
+    setDragOffset(0);
     dragStartX.current = null;
     dragMoved.current = false;
     isDraggingRef.current = false;
@@ -279,8 +279,8 @@ function FanStack({
 
   const onPointerLeave = () => {
     if (dragStartX.current !== null) {
-      if (activeCardRef.current) { activeCardRef.current.style.transition = ""; }
       if (containerRef.current) containerRef.current.style.cursor = "";
+      setDragOffset(0);
       dragStartX.current = null;
       dragMoved.current = false;
       isDraggingRef.current = false;
@@ -311,20 +311,29 @@ function FanStack({
       {[...videoList].reverse().map((video, revI) => {
         const i = videoList.length - 1 - revI;
         const isActive = currentIdx === i;
-        const { transform, zIndex } = getBaseTransform(i, currentIdx, 0);
+        const { x, y, scale, rotate, zIndex } = getBaseTransform(i, currentIdx, isActive ? dragOffset : 0);
 
         return (
-          <div
+          <motion.div
             key={video.id}
             data-card-index={i}
             ref={isActive ? activeCardRef : undefined}
             className="absolute bottom-0 left-1/2"
             style={{
               zIndex,
-              transform,
-              transition: "transform 0.4s cubic-bezier(0.34,1.56,0.64,1)",
               transformOrigin: "bottom center",
-              willChange: "transform",
+            }}
+            animate={{
+              x: `calc(-50% + ${x}px)`,
+              y: y,
+              scale: scale,
+              rotate: rotate,
+            }}
+            transition={{
+              type: "spring",
+              stiffness: 300,
+              damping: 30,
+              mass: 0.8,
             }}
           >
             <ThumbnailCard
@@ -336,7 +345,7 @@ function FanStack({
               cardDim={cardDim}
               cardVignette={cardVignette}
             />
-          </div>
+          </motion.div>
         );
       })}
     </div>

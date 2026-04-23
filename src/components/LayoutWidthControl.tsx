@@ -126,7 +126,7 @@ function Slider({
 export default function LayoutWidthControl() {
   const [open, setOpen]           = useState(false);
   const [width, setWidth]         = useState(75);
-  const [textY, setTextY]         = useState(-68);
+  const [textY, setTextY]         = useState(8);
   const [cardsY, setCardsY]       = useState(36);
   const [cardSize, setCardSize]   = useState(130);
   const [cardRotate, setCardRotate] = useState(6);
