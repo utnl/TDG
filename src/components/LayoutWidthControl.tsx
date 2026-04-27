@@ -12,9 +12,15 @@ const CARD_SPACING_EVENT = "card-spacing-change";
 const CARD_MODE_EVENT = "card-mode-change";
 const LAYOUT_MODE_EVENT = "layout-mode-change";
 const MEDIA_LIST_EVENT = "media-list-change";
+const SERVICES_TEMPLATE_EVENT = "services-template-change";
+const PROJECTS_TEMPLATE_EVENT = "projects-template-change";
+
 
 export type CardMode = "classic" | "fancy" | "image" | "ornate";
 export type LayoutMode = "fan" | "row";
+export type ServicesTemplate = "v1" | "v2";
+export type ProjectsTemplate = "v1" | "v2";
+
 export type MediaItem = { id: string; name: string; label: string; thumbnail: string; path: string; isBgVideo?: boolean; isIframe?: boolean; };
 
 export const defaultMediaList: MediaItem[] = [
@@ -34,6 +40,29 @@ export function useMediaListListener(): MediaItem[] {
   }, []);
   return list;
 }
+
+export function useServicesTemplateListener(initial: ServicesTemplate = "v1"): ServicesTemplate {
+  const [template, setTemplate] = useState<ServicesTemplate>(initial);
+  useEffect(() => {
+    const handler = (e: Event) => setTemplate((e as CustomEvent<ServicesTemplate>).detail);
+    window.addEventListener(SERVICES_TEMPLATE_EVENT, handler);
+    return () => window.removeEventListener(SERVICES_TEMPLATE_EVENT, handler);
+  }, []);
+  return template;
+}
+
+export function useProjectsTemplateListener(initial: ProjectsTemplate = "v1"): ProjectsTemplate {
+  const [template, setTemplate] = useState<ProjectsTemplate>(initial);
+  useEffect(() => {
+    const handler = (e: Event) => setTemplate((e as CustomEvent<ProjectsTemplate>).detail);
+    window.addEventListener(PROJECTS_TEMPLATE_EVENT, handler);
+    return () => window.removeEventListener(PROJECTS_TEMPLATE_EVENT, handler);
+  }, []);
+  return template;
+}
+
+
+
 
 export function useLayoutModeListener(): LayoutMode {
   const [mode, setMode] = useState<LayoutMode>("fan");
@@ -190,6 +219,11 @@ export default function LayoutWidthControl() {
   const [showStyle, setShowStyle] = useState(false);
   const [showTypography, setShowTypography] = useState(false);
   const [showMediaSettings, setShowMediaSettings] = useState(false);
+  const [servicesTemplate, setServicesTemplateState] = useState<ServicesTemplate>("v2");
+  const [projectsTemplate, setProjectsTemplateState] = useState<ProjectsTemplate>("v2");
+
+
+
 
   // Typography state
   const [titleSize, setTitleSize] = useState(92);
@@ -227,6 +261,10 @@ export default function LayoutWidthControl() {
   const setQuoteStyle = (s: QuoteStyle) => { setQuoteStyleState(s); window.dispatchEvent(new CustomEvent(QUOTE_STYLE_EVENT, { detail: s })); };
   const setCardMode = (m: CardMode) => { setCardModeState(m); window.dispatchEvent(new CustomEvent(CARD_MODE_EVENT, { detail: m })); };
   const setLayoutMode = (m: LayoutMode) => { setLayoutModeState(m); window.dispatchEvent(new CustomEvent(LAYOUT_MODE_EVENT, { detail: m })); };
+  const setServicesTemplate = (t: ServicesTemplate) => { setServicesTemplateState(t); window.dispatchEvent(new CustomEvent(SERVICES_TEMPLATE_EVENT, { detail: t })); };
+  const setProjectsTemplate = (t: ProjectsTemplate) => { setProjectsTemplateState(t); window.dispatchEvent(new CustomEvent(PROJECTS_TEMPLATE_EVENT, { detail: t })); };
+
+
 
   const handleCardRotate = (v: number) => { setCardRotate(v); window.dispatchEvent(new CustomEvent(CARD_ROTATE_EVENT, { detail: v })); };
   const handleCardSpacing = (v: number) => { setCardSpacing(v); window.dispatchEvent(new CustomEvent(CARD_SPACING_EVENT, { detail: v })); };
@@ -397,6 +435,50 @@ export default function LayoutWidthControl() {
               </div>
             )}
           </div>
+
+          <div className="h-px bg-white/8" />
+
+          {/* SECTION: TEMPLATES */}
+          <div className="flex flex-col gap-2">
+            <div className="flex items-center justify-between w-full text-amber-500 font-black text-[11px] uppercase tracking-[0.2em] mb-1">
+              <span>Section Templates</span>
+            </div>
+            <div className="flex flex-col gap-3">
+              <div className="flex flex-col gap-2">
+                <span className="text-white/50 text-[10px] uppercase tracking-widest">Our Services</span>
+                <div className="flex gap-2">
+                  {[
+                    { id: "v1", label: "Classic" },
+                    { id: "v2", label: "Sinspired" }
+                  ].map((opt) => (
+                    <button key={opt.id} onClick={() => setServicesTemplate(opt.id as ServicesTemplate)}
+                      className={`flex-1 py-1.5 text-[10px] font-bold uppercase rounded-lg border transition-all ${servicesTemplate === opt.id ? "bg-amber-400 border-amber-400 text-black" : "border-white/15 text-white/50 hover:text-white hover:border-white/30"
+                        }`}>
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+                <div className="flex flex-col gap-2">
+                  <span className="text-white/50 text-[10px] uppercase tracking-widest">Our Projects</span>
+                  <div className="flex gap-2">
+                    {[
+                      { id: "v1", label: "Classic" },
+                      { id: "v2", label: "Sinspired" }
+                    ].map((opt) => (
+                      <button key={opt.id} onClick={() => setProjectsTemplate(opt.id as ProjectsTemplate)}
+                        className={`flex-1 py-1.5 text-[10px] font-bold uppercase rounded-lg border transition-all ${projectsTemplate === opt.id ? "bg-amber-400 border-amber-400 text-black" : "border-white/15 text-white/50 hover:text-white hover:border-white/30"
+                          }`}>
+                        {opt.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+
+
 
           <div className="h-px bg-white/8" />
 
