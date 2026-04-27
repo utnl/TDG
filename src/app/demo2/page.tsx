@@ -11,7 +11,7 @@ export default function Demo2Page() {
   return (
     <>
       <NavbarDemo1 />
-      <main className="h-screen overflow-y-auto scroll-smooth snap-y snap-mandatory">
+      <main className="scroll-smooth">
         <HeroSinspiredDemo1 />
         <div className="snap-start"><OurServicesSection /></div>
         <div className="snap-start"><WhyChooseUsSection /></div>

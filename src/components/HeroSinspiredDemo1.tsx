@@ -15,6 +15,7 @@ import {
   useCardModeListener,
   useLayoutModeListener,
   useMediaListListener,
+  useBgOverlayListener,
   type MediaItem
 } from "./LayoutWidthControl";
 import { section } from 'framer-motion/client';
@@ -27,7 +28,7 @@ function ClassicThumbnailCard({ video, isActive, onClick, index, cardDim, cardVi
   return (
     <motion.button
       onClick={onClick}
-      className="group relative flex-shrink-0 w-44 h-64 outline-none"
+      className="group relative flex-shrink-0 w-64 h-[400px] outline-none"
       initial={false}
       animate={{ scale: isActive ? 1 : 0.88 }}
       whileHover={{ scale: isActive ? 1 : 0.94 }}
@@ -47,6 +48,20 @@ function ClassicThumbnailCard({ video, isActive, onClick, index, cardDim, cardVi
         )}
         {cardVignette && (
           <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-black/60 via-black/30 to-transparent" />
+        )}
+
+        {isActive && (
+          <div className="absolute top-3 right-4 flex items-center gap-1">
+            <div className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
+          </div>
+        )}
+
+        {!isActive && (
+          <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+            <div className="w-10 h-10 rounded-full flex items-center justify-center bg-black/50 border border-amber-400/70 backdrop-blur-sm">
+              <svg className="w-4 h-4 text-amber-400 ml-0.5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg>
+            </div>
+          </div>
         )}
 
         <div className="absolute top-3 left-4 flex items-center gap-2">
@@ -88,7 +103,7 @@ function FancyThumbnailCard({ video, isActive, onClick, index, cardDim, cardVign
   return (
     <motion.button
       onClick={onClick}
-      className={`group relative flex-shrink-0 w-44 h-64 outline-none transition-all duration-300`}
+      className={`group relative flex-shrink-0 w-64 h-[400px] outline-none transition-all duration-300`}
       initial={false}
       animate={{ scale: isActive ? 1.05 : 0.95 }}
       whileHover={{ scale: isActive ? 1.05 : 0.98 }}
@@ -119,12 +134,74 @@ function FancyThumbnailCard({ video, isActive, onClick, index, cardDim, cardVign
 
 
 
-// --- 4. IMAGE FRAME CARD (USING PNG OVERLAY) ---
+// --- 4. ORNATE FANTASY CARD (FROM DEMO 3) ---
+function FantasyOrnateCard({ video, isActive, onClick, index, cardDim, cardVignette }: any) {
+  return (
+    <motion.button
+      onClick={onClick}
+      className={`group relative flex-shrink-0 w-64 h-[400px] outline-none transition-all duration-300`}
+      initial={false}
+      animate={{ scale: isActive ? 1.05 : 0.9 }}
+      whileHover={{ scale: isActive ? 1.05 : 0.94 }}
+      transition={{ type: "spring", stiffness: 400, damping: 30, mass: 0.8 }}
+    >
+      {/* Thick Dark Frame */}
+      <div className={`absolute inset-0 bg-[#1A1A1A] rounded-xl border-[6px] border-[#2A2118] shadow-[0_20px_50px_rgba(0,0,0,0.8)] overflow-visible transition-shadow duration-300 ${isActive ? 'shadow-[0_0_40px_rgba(245,158,11,0.25)]' : ''}`}>
+
+        {/* Inner Gold Trim */}
+        <div className="absolute inset-1.5 border-2 border-[#D4A373]/80 rounded-lg pointer-events-none z-10" />
+
+        {/* Image Container */}
+        <div className="absolute inset-2 rounded-lg overflow-hidden bg-black">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={video.thumbnail}
+            alt={video.name}
+            className="absolute inset-0 w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
+          />
+          <div className={`absolute inset-0 transition-colors duration-300`} style={!isActive ? { backgroundColor: `rgba(0,0,0,${cardDim / 100})` } : {}} />
+          {cardVignette && <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-black/80 to-transparent" />}
+        </div>
+
+        {/* Top Ornament Only */}
+        <div className="absolute top-0 left-0 right-0 flex flex-col items-center z-20 pointer-events-none">
+          <div className="absolute -top-6 left-1/2 -translate-x-1/2 flex flex-col items-center">
+            <div className="w-3 h-3 bg-[#BF36FF] rotate-180 shadow-[0_0_10px_rgba(191,54,255,0.8)]" style={{ clipPath: "polygon(50% 0%, 0% 100%, 100% 100%)" }} />
+            <div className="w-16 h-px bg-gradient-to-r from-transparent via-[#D4A373] to-transparent mt-[-2px]" />
+          </div>
+        </div>
+
+        {/* 4 Corner Ornaments (Shifted inward to overlap gold trim) */}
+        <div className="absolute top-0.5 left-0.5 w-4 h-4 bg-[#2A2118] border-2 border-[#D4A373] rotate-45 flex items-center justify-center z-20">
+          <div className="w-1 h-1 bg-[#D4A373] rounded-full" />
+        </div>
+        <div className="absolute top-0.5 right-0.5 w-4 h-4 bg-[#2A2118] border-2 border-[#D4A373] rotate-45 flex items-center justify-center z-20">
+          <div className="w-1 h-1 bg-[#D4A373] rounded-full" />
+        </div>
+        <div className="absolute bottom-0.5 left-0.5 w-4 h-4 bg-[#2A2118] border-2 border-[#D4A373] rotate-45 flex items-center justify-center z-20">
+          <div className="w-1 h-1 bg-[#D4A373] rounded-full" />
+        </div>
+        <div className="absolute bottom-0.5 right-0.5 w-4 h-4 bg-[#2A2118] border-2 border-[#D4A373] rotate-45 flex items-center justify-center z-20">
+          <div className="w-1 h-1 bg-[#D4A373] rounded-full" />
+        </div>
+
+        {/* Number Badge at Bottom */}
+        <div className="absolute -bottom-5 left-1/2 -translate-x-1/2 w-12 h-12 rounded-full bg-[#1A1A1A] border-[3px] border-[#2A2118] flex items-center justify-center z-30 shadow-2xl">
+          <div className="absolute inset-1 border border-[#D4A373]/40 rounded-full" />
+          <span className="relative text-[12px] font-black text-[#D4A373] tracking-widest">{String(index + 1).padStart(2, "0")}</span>
+        </div>
+      </div>
+    </motion.button>
+  );
+}
+
+
+// --- 5. IMAGE FRAME CARD (USING PNG OVERLAY) ---
 function ImageFrameThumbnailCard({ video, isActive, onClick, index, cardDim, cardVignette }: any) {
   return (
     <motion.button
       onClick={onClick}
-      className={`group relative flex-shrink-0 w-44 h-64 outline-none transition-all duration-300`}
+      className={`group relative flex-shrink-0 w-64 h-[400px] outline-none transition-all duration-300`}
       initial={false}
       animate={{ scale: isActive ? 1.05 : 0.95 }}
       whileHover={{ scale: isActive ? 1.05 : 0.98 }}
@@ -153,11 +230,6 @@ function ImageFrameThumbnailCard({ video, isActive, onClick, index, cardDim, car
           <p className={`text-[9px] font-bold uppercase tracking-[0.2em] transition-colors duration-300 ${isActive ? 'text-amber-200' : 'text-white/50'}`} style={{ fontFamily: "var(--font-rajdhani)" }}>
             {video.label}
           </p>
-        </div>
-
-        {/* NUMBER BADGE */}
-        <div className="absolute top-5 left-5 bg-[#1f1610]/90 border border-amber-600/40 px-1.5 py-0.5 rounded shadow-md z-30">
-          <span className="text-[9px] font-black text-amber-500 tracking-widest">{String(index + 1).padStart(2, "0")}</span>
         </div>
       </div>
     </motion.button>
@@ -269,12 +341,45 @@ function DraggableStack({
             animate={{ x: `calc(-50% + ${x}px)`, y, scale, rotate }}
             transition={{ type: "spring", stiffness: 300, damping: 30, mass: 0.8 }}
           >
-            {cardMode === 'classic' ? (
-              <ClassicThumbnailCard video={video} isActive={isActive} onClick={() => { }} index={i} cardDim={cardDim} cardVignette={cardVignette} />
-            ) : cardMode === 'fancy' ? (
-              <FancyThumbnailCard video={video} isActive={isActive} onClick={() => { }} index={i} cardDim={cardDim} cardVignette={cardVignette} />
-            ) : (
-              <ImageFrameThumbnailCard video={video} isActive={isActive} onClick={() => { }} index={i} cardDim={cardDim} cardVignette={cardVignette} />
+            {cardMode === "classic" && (
+              <ClassicThumbnailCard
+                video={video}
+                index={i}
+                isActive={isActive}
+                onClick={() => switchVideo(i)}
+                cardDim={cardDim}
+                cardVignette={cardVignette}
+              />
+            )}
+            {cardMode === "fancy" && (
+              <FancyThumbnailCard
+                video={video}
+                index={i}
+                isActive={isActive}
+                onClick={() => switchVideo(i)}
+                cardDim={cardDim}
+                cardVignette={cardVignette}
+              />
+            )}
+            {cardMode === "ornate" && (
+              <FantasyOrnateCard
+                video={video}
+                index={i}
+                isActive={isActive}
+                onClick={() => switchVideo(i)}
+                cardDim={cardDim}
+                cardVignette={cardVignette}
+              />
+            )}
+            {cardMode === "image" && (
+              <ImageFrameThumbnailCard
+                video={video}
+                index={i}
+                isActive={isActive}
+                onClick={() => switchVideo(i)}
+                cardDim={cardDim}
+                cardVignette={cardVignette}
+              />
             )}
           </motion.div>
         );
@@ -290,15 +395,16 @@ export default function HeroSinspiredDemo1() {
   const bgVideoRef = useRef<HTMLVideoElement>(null);
   const containerRef = useRef<HTMLElement>(null);
 
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ["start start", "end start"]
-  });
+  // const { scrollYProgress } = useScroll({
+  //   target: sectionRef,
+  //   offset: ["start start", "end start"]
+  // });
 
-  const contentOpacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
-  const contentY = useTransform(scrollYProgress, [0, 0.5], [0, -100]);
-  const cardsOpacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
-  const cardsXOffset = useTransform(scrollYProgress, [0, 0.5], [0, 100]);
+  const contentOpacity = 1;
+  const contentY = 0;
+  const bgScale = 1;
+  const cardsOpacity = 1;
+  const cardsXOffset = 0;
 
   // Custom listeners for the fan stack and layout
   const cardRotate = useCardRotateListener();
@@ -309,6 +415,7 @@ export default function HeroSinspiredDemo1() {
   const cardMode = useCardModeListener();
   const layoutMode = useLayoutModeListener();
   const mediaList = useMediaListListener();
+  const bgOverlay = useBgOverlayListener();
 
   const activeMedia = mediaList[currentIdx];
 
@@ -362,8 +469,7 @@ export default function HeroSinspiredDemo1() {
             alt={activeMedia.name}
           />
         )}
-        <div className="absolute inset-0" style={{ background: 'linear-gradient(90deg, rgba(0,0,0,0.85) 25%, rgba(0,0,0,0.3) 100%)' }} />
-        <div className="absolute bottom-0 left-0 right-0 h-48 bg-gradient-to-t from-[#0a0a0a] via-[#0a0a0a]/50 to-transparent" />
+        <div className="absolute inset-0 transition-opacity duration-300" style={{ backgroundColor: `rgba(0,0,0,${bgOverlay / 100})` }} />
       </div>
 
       {/* Main Container */}
@@ -379,7 +485,11 @@ export default function HeroSinspiredDemo1() {
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.2 }}
-                className={`text-[50px] md:text-[70px] lg:text-[100px] leading-[1] font-black text-white ${changaOne.className}`}
+                className={`leading-[1] font-black ${changaOne.className}`}
+                style={{
+                  fontSize: "var(--hero-title-size, 100px)",
+                  color: "var(--hero-title-color, #ffffff)"
+                }}
               >
                 2D & 3D GAME
               </motion.div>
@@ -389,9 +499,13 @@ export default function HeroSinspiredDemo1() {
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.4 }}
-                className={`text-[50px] md:text-[70px] lg:text-[100px] leading-[1] font-black text-amber-500 ${changaOne.className}`}
+                className={`leading-[1] font-black ${changaOne.className}`}
+                style={{
+                  fontSize: "var(--hero-title-size, 100px)",
+                  color: "var(--hero-title-color, #ffffff)"
+                }}
               >
-                ART <span className="text-white">STUDIO</span>
+                ART <span style={{ color: "var(--hero-highlight-color, #f59e0b)" }}>STUDIO</span>
               </motion.div>
             </div>
 
@@ -401,22 +515,44 @@ export default function HeroSinspiredDemo1() {
               transition={{ duration: 0.8, delay: 0.6 }}
               className="flex items-center gap-4 mt-6"
             >
-              <div className="w-12 h-[2px] bg-amber-500" />
-              <h3 className="text-amber-500 font-bold tracking-[0.3em] uppercase text-sm lg:text-base">
+              <div className="w-12 h-[2px]" style={{ backgroundColor: "var(--hero-subtitle-color, #f59e0b)" }} />
+              <h3
+                className="font-bold tracking-[0.3em] uppercase"
+                style={{
+                  fontSize: "var(--hero-subtitle-size, 16px)",
+                  color: "var(--hero-subtitle-color, #f59e0b)"
+                }}
+              >
                 Game art outsource
               </h3>
             </motion.div>
-            <p className="max-w-[547px] text-white/90 text-[18px] leading-[27px] mb-[15px] mt-4">
+            <p
+              className="max-w-[547px] leading-[1.5] mb-[15px] mt-4"
+              style={{
+                fontSize: "var(--hero-desc-size, 18px)",
+                color: "var(--hero-desc-color, #e5e7eb)"
+              }}
+            >
               Sinspired Studio specializes in transforming creative ideas into vibrant art. We offer a range of services including professional game visuals, 2D stylized art, concept designs, environment art, illustrations, and 2D spine animation. Our skilled team uses advanced techniques to produce both 2D and 3D art, ensuring dynamic and interactive results.
             </p>
-            <p className="mb-[15px] mt-[32px]">
+            <div className="mb-[15px] mt-[32px]">
               <Link
                 href="#open-form"
-                className="inline-block bg-amber-500 border-2 border-amber-500 text-black font-bold text-[18px] px-[32px] py-[16px] rounded-[12px] transition-all duration-300 hover:bg-transparent hover:text-amber-500 uppercase tracking-wider shadow-[0_0_20px_rgba(245,158,11,0.2)] hover:shadow-[0_0_30px_rgba(245,158,11,0.4)]"
+                className="inline-block text-black font-bold text-[18px] px-[32px] py-[16px] rounded-[12px] transition-all duration-300 hover:bg-transparent border-2 uppercase tracking-wider"
+                style={{
+                  backgroundColor: "var(--hero-btn-bg, #f59e0b)",
+                  borderColor: "var(--hero-btn-bg, #f59e0b)"
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.color = "var(--hero-btn-bg, #f59e0b)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.color = "black";
+                }}
               >
                 Get in touch
               </Link>
-            </p>
+            </div>
           </div>
         </motion.div>
       </motion.div>

@@ -13,12 +13,12 @@ const CARD_MODE_EVENT = "card-mode-change";
 const LAYOUT_MODE_EVENT = "layout-mode-change";
 const MEDIA_LIST_EVENT = "media-list-change";
 
-export type CardMode = "classic" | "fancy" | "image";
+export type CardMode = "classic" | "fancy" | "image" | "ornate";
 export type LayoutMode = "fan" | "row";
 export type MediaItem = { id: string; name: string; label: string; thumbnail: string; path: string; isBgVideo?: boolean; isIframe?: boolean; };
 
 export const defaultMediaList: MediaItem[] = [
-  { id: '1', name: "MALEFICA", label: "Skin 2 — I", thumbnail: "/video/CutScene_SE/1big.gif", path: "/video/CutScene_SE/video_summoner_1_skill_1_skin_2.mp4", isBgVideo: true, isIframe: false },
+  { id: '1', name: "MALEFICA", label: "Skin 2 — I", thumbnail: "/video/CutScene_SE/1big.gif", path: "/4c8ad3163362313.63e48bfc90be9.gif", isBgVideo: false, isIframe: false },
   { id: '2', name: "VESTA", label: "Skin 2 — III", thumbnail: "/video/CutScene_SE/2big.gif", path: "/video/CutScene_SE/video_summoner_3_skill_1_skin_2.mp4", isBgVideo: true, isIframe: false },
   { id: '3', name: "FABER", label: "Skin 2 — IV", thumbnail: "/video/CutScene_SE/3big.gif", path: "/video/CutScene_SE/video_summoner_4_skill_1_skin_2.mp4", isBgVideo: true, isIframe: false },
   { id: '4', name: "BIGBY", label: "Long Arm", thumbnail: "/video/CutScene_SE/4.png", path: "/video/Super_Move/BIGBY-Long Arm of the Law_Closed.mp4", isBgVideo: true, isIframe: false },
@@ -46,7 +46,7 @@ export function useLayoutModeListener(): LayoutMode {
 }
 
 export function useCardModeListener(): CardMode {
-  const [mode, setMode] = useState<CardMode>("image");
+  const [mode, setMode] = useState<CardMode>("ornate");
   useEffect(() => {
     const handler = (e: Event) => setMode((e as CustomEvent<CardMode>).detail);
     window.addEventListener(CARD_MODE_EVENT, handler);
@@ -76,7 +76,7 @@ export function useQuoteStyleListener(): QuoteStyle {
 }
 
 export function useCardRotateListener(): number {
-  const [val, setVal] = useState(6);
+  const [val, setVal] = useState(10);
   useEffect(() => {
     const handler = (e: Event) => setVal((e as CustomEvent<number>).detail);
     window.addEventListener(CARD_ROTATE_EVENT, handler);
@@ -86,7 +86,7 @@ export function useCardRotateListener(): number {
 }
 
 export function useCardSpacingListener(): number {
-  const [val, setVal] = useState(28);
+  const [val, setVal] = useState(48);
   useEffect(() => {
     const handler = (e: Event) => setVal((e as CustomEvent<number>).detail);
     window.addEventListener(CARD_SPACING_EVENT, handler);
@@ -101,7 +101,7 @@ const CARD_DIM_EVENT = "card-dim-change";
 const CARD_VIGNETTE_EVENT = "card-vignette-change";
 
 export function useCardSizeListener(): number {
-  const [val, setVal] = useState(1.3);
+  const [val, setVal] = useState(1.25);
   useEffect(() => {
     const handler = (e: Event) => setVal((e as CustomEvent<number>).detail);
     window.addEventListener(CARD_SIZE_EVENT, handler);
@@ -111,7 +111,7 @@ export function useCardSizeListener(): number {
 }
 
 export function useBgOverlayListener(): number {
-  const [val, setVal] = useState(0); // 0 = nguyên bản
+  const [val, setVal] = useState(25); // 25% mặc định
   useEffect(() => {
     const handler = (e: Event) => setVal((e as CustomEvent<number>).detail);
     window.addEventListener(BG_OVERLAY_EVENT, handler);
@@ -121,7 +121,7 @@ export function useBgOverlayListener(): number {
 }
 
 export function useCardDimListener(): number {
-  const [val, setVal] = useState(55);
+  const [val, setVal] = useState(0);
   useEffect(() => {
     const handler = (e: Event) => setVal((e as CustomEvent<number>).detail);
     window.addEventListener(CARD_DIM_EVENT, handler);
@@ -131,7 +131,7 @@ export function useCardDimListener(): number {
 }
 
 export function useCardVignetteListener(): boolean {
-  const [val, setVal] = useState(true);
+  const [val, setVal] = useState(false);
   useEffect(() => {
     const handler = (e: Event) => setVal((e as CustomEvent<boolean>).detail);
     window.addEventListener(CARD_VIGNETTE_EVENT, handler);
@@ -172,23 +172,34 @@ export default function LayoutWidthControl() {
   const [open, setOpen] = useState(false);
   const [width, setWidth] = useState(76);
   const [textY, setTextY] = useState(8);
-  const [cardsX, setCardsX] = useState(84);
+  const [cardsX, setCardsX] = useState(-16);
   const [cardsY, setCardsY] = useState(-120);
-  const [cardSize, setCardSize] = useState(130);
-  const [cardRotate, setCardRotate] = useState(6);
-  const [cardSpacing, setCardSpacing] = useState(28);
-  const [bgOverlay, setBgOverlay] = useState(0);
-  const [cardDim, setCardDim] = useState(55);
-  const [cardVignette, setCardVignette] = useState(true);
+  const [cardSize, setCardSize] = useState(125);
+  const [cardRotate, setCardRotate] = useState(10);
+  const [cardSpacing, setCardSpacing] = useState(48);
+  const [bgOverlay, setBgOverlay] = useState(25);
+  const [cardDim, setCardDim] = useState(0);
+  const [cardVignette, setCardVignette] = useState(false);
   const [heroMode, setHeroModeState] = useState<HeroMode>("cyber");
   const [quoteStyle, setQuoteStyleState] = useState<QuoteStyle>("glow-pulse");
-  const [cardModeState, setCardModeState] = useState<CardMode>("image");
+  const [cardModeState, setCardModeState] = useState<CardMode>("ornate");
   const [layoutModeState, setLayoutModeState] = useState<LayoutMode>("fan");
   const [mediaList, setMediaListState] = useState<MediaItem[]>(defaultMediaList);
   const [showLayout, setShowLayout] = useState(true);
   const [showCard, setShowCard] = useState(false);
   const [showStyle, setShowStyle] = useState(false);
+  const [showTypography, setShowTypography] = useState(false);
   const [showMediaSettings, setShowMediaSettings] = useState(false);
+
+  // Typography state
+  const [titleSize, setTitleSize] = useState(92);
+  const [titleColor, setTitleColor] = useState("#ffffff");
+  const [highlightColor, setHighlightColor] = useState("#f59e0b");
+  const [subtitleSize, setSubtitleSize] = useState(16);
+  const [subtitleColor, setSubtitleColor] = useState("#f59e0b");
+  const [descSize, setDescSize] = useState(18);
+  const [descColor, setDescColor] = useState("#ffffff");
+  const [btnColor, setBtnColor] = useState("#f59e0b");
 
   useEffect(() => {
     const r = document.documentElement.style;
@@ -200,7 +211,17 @@ export default function LayoutWidthControl() {
     window.dispatchEvent(new CustomEvent(CARD_SIZE_EVENT, { detail: cardSize / 100 }));
     r.setProperty("--hero-card-rotate", `${cardRotate}`);
     r.setProperty("--hero-card-spacing", `${cardSpacing}`);
-  }, [width, textY, cardsX, cardsY, cardSize, cardRotate, cardSpacing]);
+
+    // Typography
+    r.setProperty("--hero-title-size", `${titleSize}px`);
+    r.setProperty("--hero-title-color", titleColor);
+    r.setProperty("--hero-highlight-color", highlightColor);
+    r.setProperty("--hero-subtitle-size", `${subtitleSize}px`);
+    r.setProperty("--hero-subtitle-color", subtitleColor);
+    r.setProperty("--hero-desc-size", `${descSize}px`);
+    r.setProperty("--hero-desc-color", descColor);
+    r.setProperty("--hero-btn-bg", btnColor);
+  }, [width, textY, cardsX, cardsY, cardSize, cardRotate, cardSpacing, titleSize, titleColor, highlightColor, subtitleSize, subtitleColor, descSize, descColor, btnColor]);
 
   const setHeroMode = (m: HeroMode) => { setHeroModeState(m); window.dispatchEvent(new CustomEvent(HERO_MODE_EVENT, { detail: m })); };
   const setQuoteStyle = (s: QuoteStyle) => { setQuoteStyleState(s); window.dispatchEvent(new CustomEvent(QUOTE_STYLE_EVENT, { detail: s })); };
@@ -244,7 +265,7 @@ export default function LayoutWidthControl() {
   return (
     <div className="fixed bottom-6 left-6 z-[9999] flex flex-col items-start gap-2">
       {open && (
-        <div className="bg-black/93 border border-white/12 backdrop-blur-md rounded-xl px-4 py-4 flex flex-col gap-3 shadow-2xl w-[240px] max-h-[80vh] overflow-y-auto">
+        <div className="bg-black/93 border border-white/12 backdrop-blur-md rounded-xl px-5 py-5 flex flex-col gap-4 shadow-2xl w-[300px] max-h-[85vh] overflow-y-auto">
 
           {/* SECTION: LAYOUT */}
           <div className="flex flex-col gap-2">
@@ -301,6 +322,7 @@ export default function LayoutWidthControl() {
                     {[
                       { id: "classic", label: "TDG Original" },
                       { id: "fancy", label: "Fantasy Frame" },
+                      { id: "ornate", label: "Fantasy Ornate" },
                       { id: "image", label: "Custom PNG" }
                     ].map((opt) => (
                       <button key={opt.id} onClick={() => setCardMode(opt.id as CardMode)}
@@ -371,6 +393,55 @@ export default function LayoutWidthControl() {
                       </button>
                     ))}
                   </div>
+                </div>
+              </div>
+            )}
+          </div>
+
+          <div className="h-px bg-white/8" />
+
+          {/* SECTION: TYPOGRAPHY */}
+          <div className="flex flex-col gap-2">
+            <button
+              onClick={() => setShowTypography(!showTypography)}
+              className="flex items-center justify-between w-full text-amber-500 font-black text-[11px] uppercase tracking-[0.2em] mb-1"
+            >
+              <span>Typography</span>
+              <svg className={`w-3 h-3 transition-transform ${showTypography ? "rotate-180" : ""}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
+            </button>
+
+            {showTypography && (
+              <div className="flex flex-col gap-4 animate-in fade-in slide-in-from-top-1 duration-200">
+                <div className="flex flex-col gap-2">
+                  <Slider label="Main Title Size" value={titleSize} min={30} max={140} step={2} unit="px" onChange={setTitleSize} />
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="text-[9px] text-white/40 uppercase">Colors:</span>
+                    <div className="flex gap-1">
+                      <input type="color" value={titleColor} onChange={(e) => setTitleColor(e.target.value)} className="w-5 h-5 bg-transparent border-0 cursor-pointer" title="Line 1 Color" />
+                      <input type="color" value={highlightColor} onChange={(e) => setHighlightColor(e.target.value)} className="w-5 h-5 bg-transparent border-0 cursor-pointer" title="Line 2 Highlight Color" />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex flex-col gap-2">
+                  <Slider label="Subtitle Size" value={subtitleSize} min={10} max={30} step={1} unit="px" onChange={setSubtitleSize} />
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="text-[9px] text-white/40 uppercase">Color:</span>
+                    <input type="color" value={subtitleColor} onChange={(e) => setSubtitleColor(e.target.value)} className="w-5 h-5 bg-transparent border-0 cursor-pointer" />
+                  </div>
+                </div>
+
+                <div className="flex flex-col gap-2">
+                  <Slider label="Description Size" value={descSize} min={12} max={24} step={1} unit="px" onChange={setDescSize} />
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="text-[9px] text-white/40 uppercase">Color:</span>
+                    <input type="color" value={descColor} onChange={(e) => setDescColor(e.target.value)} className="w-5 h-5 bg-transparent border-0 cursor-pointer" />
+                  </div>
+                </div>
+
+                <div className="flex flex-col gap-2">
+                  <span className="text-white/50 text-[10px] uppercase tracking-widest">Button Color</span>
+                  <input type="color" value={btnColor} onChange={(e) => setBtnColor(e.target.value)} className="w-full h-6 bg-white/5 border border-white/10 rounded cursor-pointer" />
                 </div>
               </div>
             )}
