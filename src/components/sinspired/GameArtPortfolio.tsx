@@ -2,6 +2,10 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Navigation, Autoplay } from 'swiper/modules';
+import 'swiper/css';
+import 'swiper/css/navigation';
 
 const portfolioData = {
   '3D Characters': [
@@ -58,18 +62,58 @@ export default function GameArtPortfolio() {
                     key={category}
                     className={`portfolio-items ${activeTab === category ? 'active' : ''}`}
                   >
-                    <div className="items-grid">
-                      {portfolioData[category as keyof typeof portfolioData].map((img, idx) => (
-                        <div key={idx} className="portfolio-item">
-                          <Image
-                            src={img}
-                            alt={`${category} ${idx + 1}`}
-                            width={400}
-                            height={300}
-                            className="portfolio-image"
-                          />
-                        </div>
-                      ))}
+                    <div className="item swiper mySwiper">
+                      <Swiper
+                        modules={[Navigation, Autoplay]}
+                        slidesPerView={3}
+                        spaceBetween={24}
+                        loop={true}
+                        autoplay={{
+                          delay: 0,
+                          disableOnInteraction: false,
+                          pauseOnMouseEnter: true,
+                        }}
+                        speed={5000}
+                        navigation={{
+                          prevEl: '.portfolio-prev',
+                          nextEl: '.portfolio-next',
+                        }}
+                        breakpoints={{
+                          320: {
+                            slidesPerView: 1,
+                            spaceBetween: 16,
+                          },
+                          640: {
+                            slidesPerView: 2,
+                            spaceBetween: 20,
+                          },
+                          1024: {
+                            slidesPerView: 3,
+                            spaceBetween: 24,
+                          },
+                        }}
+                        className="swiper-wrapper"
+                      >
+                        {portfolioData[category as keyof typeof portfolioData].map((img, idx) => (
+                          <SwiperSlide key={idx}>
+                            <div className="portfolio-item">
+                              <div className="image-inner">
+                                <Image
+                                  src={img}
+                                  alt={`${category} ${idx + 1}`}
+                                  width={400}
+                                  height={300}
+                                  className="portfolio-image"
+                                />
+                              </div>
+                            </div>
+                          </SwiperSlide>
+                        ))}
+                      </Swiper>
+                      <div className="portfolio-nav">
+                        <div className="portfolio-prev">←</div>
+                        <div className="portfolio-next">→</div>
+                      </div>
                     </div>
                   </div>
                 ))}

@@ -537,54 +537,200 @@ export default function Demo2EditorialSections() {
             index="02"
             eyebrow="Our Projects"
             title="OUR PROJECTS"
-            copy="I moved this block right after services and made the heading much more obvious. It now behaves more like a real portfolio section instead of a generic content band."
+            copy="We create immersive 2D animation, stunning game art, and eye-catching VFX that bring ideas to life and captivate players."
             highlight="PROJECTS"
             variant={titleVariant}
             accentColor={accentColor}
             dark
           />
 
-          <div className="mb-10 flex items-center justify-between gap-4">
-            <p className="text-sm text-white/55">Show nhiều project hơn, chia nhịp như gallery studio và giữ trọng tâm 2D.</p>
-            <span className="rounded-full border border-[#ff8a2a]/30 px-4 py-2 text-xs uppercase tracking-[0.16em] text-[#ffb16f]">
-              Selected Works
-            </span>
+          {/* Filter Tabs - Exact style from image */}
+          <div className="mb-8 flex flex-wrap items-center justify-center gap-4">
+            {["ALL", "2D ANIMATION", "GAME ART", "VFX", "CINEMATIC", "SORT BY"].map((filter) => {
+              const isActive = filter === "ALL";
+              const isSortBy = filter === "SORT BY";
+              return (
+                <button
+                  key={filter}
+                  className={`relative rounded-lg px-8 py-3 text-[13px] font-bold uppercase tracking-[0.08em] transition-all duration-200 ${
+                    isActive
+                      ? "bg-[#ff8c3a] text-black"
+                      : "border border-[#3a3a3a] bg-transparent text-[#999] hover:border-[#ff8c3a] hover:text-white"
+                  }`}
+                  style={{ fontFamily: "var(--font-rajdhani)" }}
+                >
+                  {filter}
+                  {isSortBy && (
+                    <svg className="ml-2 inline-block h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  )}
+                </button>
+              );
+            })}
           </div>
 
-          <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-            {featuredProjects.map((project, index) => (
+          {/* Grid Layout - Exact from image: 1 large left + 2x2 grid right */}
+          <div className="grid gap-4 lg:grid-cols-[1.4fr_1fr_1fr]">
+            {/* Large Featured Card - Left side, spans 2 rows */}
+            <motion.article
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.2 }}
+              transition={{ duration: 0.5, ease: "easeOut" }}
+              className="group relative overflow-hidden rounded-2xl bg-[#1a1a1a] lg:row-span-2"
+            >
+              <div className="relative h-full min-h-[500px] lg:min-h-[600px]">
+                <Image 
+                  src={featuredProjects[0].image} 
+                  alt={featuredProjects[0].title} 
+                  fill 
+                  className="object-cover" 
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
+                
+                {/* Play Button */}
+                <motion.div
+                  whileHover={{ scale: 1.1 }}
+                  className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
+                >
+                  <div className="flex h-20 w-20 items-center justify-center rounded-full bg-white/95 shadow-2xl backdrop-blur-sm transition-all duration-300 hover:bg-white">
+                    <svg className="ml-1 h-9 w-9 text-black" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M8 5v14l11-7z" />
+                    </svg>
+                  </div>
+                </motion.div>
+
+                {/* Featured Badge */}
+                <div className="absolute left-6 top-6">
+                  <span className="inline-block rounded-md bg-[#ff8c3a] px-4 py-2 text-[11px] font-bold uppercase tracking-wider text-black">
+                    Featured Project
+                  </span>
+                </div>
+
+                {/* Bottom Info */}
+                <div className="absolute bottom-0 left-0 right-0 p-8">
+                  <p className="mb-2 text-[11px] font-bold uppercase tracking-[0.15em] text-[#ff8c3a]">
+                    2D ANIMATION
+                  </p>
+                  <h3
+                    className="mb-3 text-3xl font-bold leading-tight text-white"
+                    style={{ fontFamily: "var(--font-rajdhani)" }}
+                  >
+                    {featuredProjects[0].title}
+                  </h3>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-[#999]">2024 • Animation, Background, Concept</span>
+                    <button className="rounded-full border border-[#ff8c3a]/50 bg-black/40 px-4 py-1.5 text-xs font-semibold uppercase tracking-wider text-white backdrop-blur-sm transition-all hover:bg-[#ff8c3a] hover:text-black">
+                      Demo
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </motion.article>
+
+            {/* Top Right Cards - 2 columns */}
+            {featuredProjects.slice(1, 3).map((project, index) => (
               <motion.article
                 key={project.title}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, amount: 0.2 }}
-                transition={{ delay: index * 0.08, duration: 0.4 }}
-                className={`group overflow-hidden rounded-[28px] border border-white/10 bg-[#181818] ${project.className}`}
+                transition={{ delay: (index + 1) * 0.1, duration: 0.5, ease: "easeOut" }}
+                className="group relative overflow-hidden rounded-2xl bg-[#1a1a1a]"
               >
-                <div className="relative aspect-[16/10] overflow-hidden">
-                  <Image
-                    src={project.image}
-                    alt={project.title}
-                    fill
-                    className="object-cover transition-transform duration-500 group-hover:scale-[1.04]"
+                <div className="relative h-full min-h-[290px]">
+                  <Image 
+                    src={project.image} 
+                    alt={project.title} 
+                    fill 
+                    className="object-cover" 
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-black/8 to-transparent" />
-                </div>
-                <div className="flex items-end justify-between gap-4 p-5">
-                  <div>
-                    <p className="text-[11px] uppercase tracking-[0.16em] text-[#ff9f45]">
-                      {project.category}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/20 to-transparent" />
+                  
+                  {/* Play Button */}
+                  <motion.div
+                    whileHover={{ scale: 1.15 }}
+                    className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
+                  >
+                    <div className="flex h-16 w-16 items-center justify-center rounded-full bg-white/95 shadow-xl backdrop-blur-sm transition-all hover:bg-white">
+                      <svg className="ml-0.5 h-7 w-7 text-black" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M8 5v14l11-7z" />
+                      </svg>
+                    </div>
+                  </motion.div>
+
+                  {/* Bottom Info */}
+                  <div className="absolute bottom-0 left-0 right-0 p-5">
+                    <p className="mb-1.5 text-[10px] font-bold uppercase tracking-[0.15em] text-[#ff8c3a]">
+                      {project.category.toUpperCase()}
                     </p>
                     <h3
-                      className="mt-2 text-2xl font-semibold leading-tight text-white"
+                      className="mb-2 text-xl font-bold leading-tight text-white"
                       style={{ fontFamily: "var(--font-rajdhani)" }}
                     >
                       {project.title}
                     </h3>
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs text-[#999]">2024 • {project.category}</span>
+                      <span className="rounded-full border border-[#ff8c3a]/50 bg-black/40 px-3 py-1 text-[10px] font-semibold uppercase tracking-wider text-white backdrop-blur-sm">
+                        Demo
+                      </span>
+                    </div>
                   </div>
-                  <span className="rounded-full border border-[#ff8a2a]/40 px-3 py-1 text-xs text-[#ffd2ad]">
-                    Demo
-                  </span>
+                </div>
+              </motion.article>
+            ))}
+
+            {/* Bottom Right Cards - 2 columns */}
+            {featuredProjects.slice(3, 5).map((project, index) => (
+              <motion.article
+                key={project.title}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.2 }}
+                transition={{ delay: (index + 3) * 0.1, duration: 0.5, ease: "easeOut" }}
+                className="group relative overflow-hidden rounded-2xl bg-[#1a1a1a]"
+              >
+                <div className="relative h-full min-h-[290px]">
+                  <Image 
+                    src={project.image} 
+                    alt={project.title} 
+                    fill 
+                    className="object-cover" 
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/20 to-transparent" />
+                  
+                  {/* Play Button */}
+                  <motion.div
+                    whileHover={{ scale: 1.15 }}
+                    className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
+                  >
+                    <div className="flex h-16 w-16 items-center justify-center rounded-full bg-white/95 shadow-xl backdrop-blur-sm transition-all hover:bg-white">
+                      <svg className="ml-0.5 h-7 w-7 text-black" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M8 5v14l11-7z" />
+                      </svg>
+                    </div>
+                  </motion.div>
+
+                  {/* Bottom Info */}
+                  <div className="absolute bottom-0 left-0 right-0 p-5">
+                    <p className="mb-1.5 text-[10px] font-bold uppercase tracking-[0.15em] text-[#ff8c3a]">
+                      {project.category.toUpperCase()}
+                    </p>
+                    <h3
+                      className="mb-2 text-xl font-bold leading-tight text-white"
+                      style={{ fontFamily: "var(--font-rajdhani)" }}
+                    >
+                      {project.title}
+                    </h3>
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs text-[#999]">2024 • {project.category}</span>
+                      <span className="rounded-full border border-[#ff8c3a]/50 bg-black/40 px-3 py-1 text-[10px] font-semibold uppercase tracking-wider text-white backdrop-blur-sm">
+                        Demo
+                      </span>
+                    </div>
+                  </div>
                 </div>
               </motion.article>
             ))}
