@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { motion, useScroll, useTransform } from "framer-motion";
-import { useState } from "react";
+import { useRef, useState } from "react";
 
 type TitleVariant = "outline" | "indexed" | "studio" | "frame";
 
@@ -81,7 +81,6 @@ const featuredProjects = [
   },
 ];
 
-
 function SectionIntro({
   index,
   eyebrow,
@@ -105,9 +104,8 @@ function SectionIntro({
   dark?: boolean;
   align?: "center" | "left";
 }) {
-  const renderedTitle = highlight && title.includes(highlight)
-    ? title.split(highlight)
-    : [title];
+  const renderedTitle =
+    highlight && title.includes(highlight) ? title.split(highlight) : [title];
 
   const titleClass = dark ? "text-white" : "text-[#111111]";
   const copyClass = dark ? "text-white/68" : "text-[#c9c9c9]";
@@ -146,7 +144,9 @@ function SectionIntro({
                 title
               )}
             </h2>
-            <p className={`mt-4 max-w-3xl text-base leading-7 ${copyClass}`}>{copy}</p>
+            <p className={`mt-4 max-w-3xl text-base leading-7 ${copyClass}`}>
+              {copy}
+            </p>
           </div>
         </div>
       </motion.div>
@@ -164,12 +164,19 @@ function SectionIntro({
       >
         <div className="text-center">
           <div className="flex items-center justify-center gap-4 mb-3">
-            <span className="text-sm font-black italic tracking-tighter" style={accentStyle}>
+            <span
+              className="text-sm font-black italic tracking-tighter"
+              style={accentStyle}
+            >
               // {index}
             </span>
             <div className="w-10 h-[1px] bg-white/10" />
             <span className="text-[10px] font-bold uppercase tracking-[0.4em] text-white/30">
-              {index === "01" ? "Capabilities" : index === "02" ? "Portfolio" : "Information"}
+              {index === "01"
+                ? "Capabilities"
+                : index === "02"
+                  ? "Portfolio"
+                  : "Information"}
             </span>
           </div>
           <h2
@@ -186,7 +193,9 @@ function SectionIntro({
               title
             )}
           </h2>
-          <p className={`mx-auto mt-5 max-w-2xl text-base leading-7 opacity-70 ${copyClass}`}>
+          <p
+            className={`mx-auto mt-5 max-w-2xl text-base leading-7 opacity-70 ${copyClass}`}
+          >
             {copy}
           </p>
         </div>
@@ -226,7 +235,9 @@ function SectionIntro({
           </h2>
         </div>
         <div className="text-center mt-6">
-          <p className={`mx-auto max-w-2xl text-sm leading-relaxed opacity-60 ${copyClass}`}>
+          <p
+            className={`mx-auto max-w-2xl text-sm leading-relaxed opacity-60 ${copyClass}`}
+          >
             {copy}
           </p>
         </div>
@@ -242,26 +253,33 @@ function SectionIntro({
       transition={{ duration: 0.45, ease: "easeOut" }}
       className={compact ? "mb-6 md:mb-8" : "mb-12 md:mb-14"}
     >
-      <div className={`relative ${align === "center" ? "overflow-hidden text-center" : "text-left"}`}>
+      <div
+        className={`relative ${align === "center" ? "overflow-hidden text-center" : "text-left"}`}
+      >
         <div
-          className={`pointer-events-none absolute top-0 whitespace-nowrap font-black uppercase leading-none tracking-tight ${align === "center"
+          className={`pointer-events-none absolute top-0 whitespace-nowrap font-black uppercase leading-none tracking-tight ${
+            align === "center"
               ? "inset-x-0 text-center text-[64px] md:text-[112px] lg:text-[188px]"
               : "left-0 text-left text-[48px] md:text-[84px] lg:text-[120px] w-max"
-            }`}
+          }`}
           style={{
             fontFamily: "var(--font-rajdhani)",
-            WebkitTextStroke: align === "center" ? '1px rgba(255, 255, 255, 0.12)' : '1px rgba(255, 255, 255, 0.08)',
-            color: 'transparent'
+            WebkitTextStroke:
+              align === "center"
+                ? "1px rgba(255, 255, 255, 0.12)"
+                : "1px rgba(255, 255, 255, 0.08)",
+            color: "transparent",
           }}
         >
           {eyebrow}
         </div>
 
         <div
-          className={`relative z-10 mx-auto ${align === "center"
+          className={`relative z-10 mx-auto ${
+            align === "center"
               ? "max-w-4xl pt-[72px] md:pt-[92px] lg:pt-[110px]"
               : "max-w-full pt-[52px] md:pt-[68px] lg:pt-[84px]"
-            }`}
+          }`}
         >
           <h2
             className={`text-4xl font-black uppercase tracking-tight md:text-5xl lg:text-6xl ${titleClass}`}
@@ -277,7 +295,9 @@ function SectionIntro({
               title
             )}
           </h2>
-          <p className={`mt-4 max-w-3xl text-base leading-7 ${copyClass} ${align === "center" ? "mx-auto" : "mx-0"}`}>
+          <p
+            className={`mt-4 max-w-3xl text-base leading-7 ${copyClass} ${align === "center" ? "mx-auto" : "mx-0"}`}
+          >
             {copy}
           </p>
         </div>
@@ -289,11 +309,74 @@ function SectionIntro({
 export default function Demo4EditorialSections() {
   const [titleVariant, setTitleVariant] = useState<TitleVariant>("outline");
   const [accentColor, setAccentColor] = useState("#ffb400");
-  const [activeHeroProject, setActiveHeroProject] = useState(0);
+  const [activeProject, setActiveProject] = useState(0);
+  const hoverTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const hoverLockUntilRef = useRef(0);
   const { scrollY } = useScroll();
   const servicesBackdropY = useTransform(scrollY, [0, 900], [0, -36]);
   const heroProjects = featuredProjects.slice(0, 5);
-  const bottomProjects = [featuredProjects[5], featuredProjects[6], featuredProjects[7], featuredProjects[4]];
+  const bottomProjects = [
+    featuredProjects[5],
+    featuredProjects[6],
+    featuredProjects[7],
+    featuredProjects[4],
+  ];
+  const heroLayouts: Record<number, string[]> = {
+    0: [
+      "lg:col-start-1 lg:row-start-1 lg:col-span-2 lg:row-span-2",
+      "lg:col-start-3 lg:row-start-1 lg:col-span-1 lg:row-span-1",
+      "lg:col-start-4 lg:row-start-1 lg:col-span-1 lg:row-span-1",
+      "lg:col-start-3 lg:row-start-2 lg:col-span-1 lg:row-span-1",
+      "lg:col-start-4 lg:row-start-2 lg:col-span-1 lg:row-span-1",
+    ],
+    1: [
+      "lg:col-start-1 lg:row-start-1 lg:col-span-1 lg:row-span-1",
+      "lg:col-start-2 lg:row-start-1 lg:col-span-2 lg:row-span-2",
+      "lg:col-start-4 lg:row-start-1 lg:col-span-1 lg:row-span-1",
+      "lg:col-start-1 lg:row-start-2 lg:col-span-1 lg:row-span-1",
+      "lg:col-start-4 lg:row-start-2 lg:col-span-1 lg:row-span-1",
+    ],
+    2: [
+      "lg:col-start-1 lg:row-start-1 lg:col-span-1 lg:row-span-1",
+      "lg:col-start-2 lg:row-start-1 lg:col-span-1 lg:row-span-1",
+      "lg:col-start-3 lg:row-start-1 lg:col-span-2 lg:row-span-2",
+      "lg:col-start-1 lg:row-start-2 lg:col-span-1 lg:row-span-1",
+      "lg:col-start-2 lg:row-start-2 lg:col-span-1 lg:row-span-1",
+    ],
+    3: [
+      "lg:col-start-1 lg:row-start-1 lg:col-span-1 lg:row-span-1",
+      "lg:col-start-2 lg:row-start-1 lg:col-span-1 lg:row-span-1",
+      "lg:col-start-1 lg:row-start-2 lg:col-span-1 lg:row-span-1",
+      "lg:col-start-3 lg:row-start-1 lg:col-span-2 lg:row-span-2",
+      "lg:col-start-2 lg:row-start-2 lg:col-span-1 lg:row-span-1",
+    ],
+    4: [
+      "lg:col-start-1 lg:row-start-1 lg:col-span-1 lg:row-span-1",
+      "lg:col-start-2 lg:row-start-1 lg:col-span-1 lg:row-span-1",
+      "lg:col-start-1 lg:row-start-2 lg:col-span-1 lg:row-span-1",
+      "lg:col-start-2 lg:row-start-2 lg:col-span-1 lg:row-span-1",
+      "lg:col-start-3 lg:row-start-1 lg:col-span-2 lg:row-span-2",
+    ],
+  };
+
+  const handleProjectHover = (index: number) => {
+    if (index === activeProject) return;
+    if (Date.now() < hoverLockUntilRef.current) return;
+    if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current);
+
+    hoverTimeoutRef.current = setTimeout(() => {
+      setActiveProject(index);
+      // Prevent immediate oscillation while grid reflows under cursor.
+      hoverLockUntilRef.current = Date.now() + 180;
+    }, 90);
+  };
+
+  const clearHoverIntent = () => {
+    if (hoverTimeoutRef.current) {
+      clearTimeout(hoverTimeoutRef.current);
+      hoverTimeoutRef.current = null;
+    }
+  };
 
   return (
     <div className="bg-[#0f0f0f] text-white">
@@ -309,8 +392,11 @@ export default function Demo4EditorialSections() {
             <button
               key={option.id}
               onClick={() => setTitleVariant(option.id as TitleVariant)}
-              className={`rounded-full px-4 py-2 text-sm transition-colors ${isActive ? "bg-[#ff7a1a] text-black" : "bg-white/6 text-white/75 hover:bg-white/12 hover:text-white"
-                }`}
+              className={`rounded-full px-4 py-2 text-sm transition-colors ${
+                isActive
+                  ? "bg-[#ff7a1a] text-black"
+                  : "bg-white/6 text-white/75 hover:bg-white/12 hover:text-white"
+              }`}
             >
               {option.label}
             </button>
@@ -329,7 +415,10 @@ export default function Demo4EditorialSections() {
       </div>
 
       <section className="snap-start border-t border-[#252525] bg-[linear-gradient(180deg,#171717_0%,#101010_100%)] pt-6 pb-20 lg:pt-8 lg:pb-24">
-        <div className="mx-auto" style={{ width: "min(var(--layout-width, 85%), 1240px)" }}>
+        <div
+          className="mx-auto"
+          style={{ width: "min(var(--layout-width, 85%), 1240px)" }}
+        >
           <div className="relative">
             {titleVariant === "outline" && (
               <motion.div style={{ y: servicesBackdropY }}>
@@ -368,7 +457,11 @@ export default function Demo4EditorialSections() {
                 initial={{ opacity: 0, y: 28, scale: 0.985 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, amount: 0.2 }}
-                transition={{ delay: index * 0.1, duration: 0.55, ease: "easeOut" }}
+                transition={{
+                  delay: index * 0.1,
+                  duration: 0.55,
+                  ease: "easeOut",
+                }}
                 whileHover={{ y: -6 }}
                 className="group overflow-hidden rounded-[24px] border border-white/10 bg-[#1a1a1a] shadow-[0_20px_60px_rgba(0,0,0,0.22)]"
               >
@@ -378,7 +471,12 @@ export default function Demo4EditorialSections() {
                     whileHover={{ scale: 1.04, y: -4 }}
                     transition={{ duration: 0.45, ease: "easeOut" }}
                   >
-                    <Image src={service.image} alt={service.title} fill className="object-cover" />
+                    <Image
+                      src={service.image}
+                      alt={service.title}
+                      fill
+                      className="object-cover"
+                    />
                   </motion.div>
                   <motion.div
                     className="absolute inset-0 bg-gradient-to-t from-black/26 via-transparent to-transparent"
@@ -398,13 +496,22 @@ export default function Demo4EditorialSections() {
                   </h3>
                   <motion.div
                     className="mt-3 h-[2px] rounded-full"
-                    style={{ backgroundColor: accentColor, transformOrigin: "left center" }}
+                    style={{
+                      backgroundColor: accentColor,
+                      transformOrigin: "left center",
+                    }}
                     initial={{ scaleX: 0 }}
                     whileInView={{ scaleX: 1 }}
                     viewport={{ once: true, amount: 0.35 }}
-                    transition={{ delay: 0.18 + index * 0.1, duration: 0.45, ease: "easeOut" }}
+                    transition={{
+                      delay: 0.18 + index * 0.1,
+                      duration: 0.45,
+                      ease: "easeOut",
+                    }}
                   />
-                  <p className="mt-3 text-sm leading-6 text-white/68">{service.description}</p>
+                  <p className="mt-3 text-sm leading-6 text-white/68">
+                    {service.description}
+                  </p>
                 </div>
               </motion.article>
             ))}
@@ -412,7 +519,10 @@ export default function Demo4EditorialSections() {
         </div>
       </section>
 
-      <section id="projects" className="snap-start relative overflow-hidden border-t border-[#252525] bg-[#0d0d12] py-20 lg:py-24">
+      <section
+        id="projects"
+        className="snap-start relative overflow-hidden border-t border-[#252525] bg-[#0d0d12] py-20 lg:py-24"
+      >
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_85%_50%,rgba(57,45,138,0.22),transparent_40%)]" />
         <svg
           className="pointer-events-none absolute right-[13%] top-[24%] h-20 w-40 opacity-70"
@@ -420,8 +530,19 @@ export default function Demo4EditorialSections() {
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
         >
-          <path d="M6 58C34 44 63 36 95 32C119 29 136 26 154 20" stroke="#ff8c3a" strokeWidth="2.5" strokeLinecap="round" />
-          <path d="M95 32C107 35 120 39 133 47" stroke="#ff8c3a" strokeWidth="2" strokeLinecap="round" opacity="0.7" />
+          <path
+            d="M6 58C34 44 63 36 95 32C119 29 136 26 154 20"
+            stroke="#ff8c3a"
+            strokeWidth="2.5"
+            strokeLinecap="round"
+          />
+          <path
+            d="M95 32C107 35 120 39 133 47"
+            stroke="#ff8c3a"
+            strokeWidth="2"
+            strokeLinecap="round"
+            opacity="0.7"
+          />
         </svg>
         <svg
           className="pointer-events-none absolute bottom-[12%] right-[5%] h-16 w-36 opacity-40"
@@ -429,9 +550,17 @@ export default function Demo4EditorialSections() {
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
         >
-          <path d="M5 44C28 35 50 30 79 25C101 21 122 14 139 8" stroke="#8a78ff" strokeWidth="2.2" strokeLinecap="round" />
+          <path
+            d="M5 44C28 35 50 30 79 25C101 21 122 14 139 8"
+            stroke="#8a78ff"
+            strokeWidth="2.2"
+            strokeLinecap="round"
+          />
         </svg>
-        <div className="relative z-10 mx-auto" style={{ width: "min(var(--layout-width, 85%), 1240px)" }}>
+        <div
+          className="relative z-10 mx-auto"
+          style={{ width: "min(var(--layout-width, 85%), 1240px)" }}
+        >
           <SectionIntro
             index="02"
             eyebrow="Our Projects"
@@ -444,54 +573,85 @@ export default function Demo4EditorialSections() {
           />
 
           <div className="mb-8 flex flex-wrap items-center justify-center gap-3">
-            {["ALL", "2D ANIMATION", "GAME ART", "VFX", "CINEMATIC"].map((filter) => {
-              const isActive = filter === "ALL";
-              return (
-                <button
-                  key={filter}
-                  className={`relative rounded-lg border px-7 py-2 text-xs font-bold uppercase tracking-[0.1em] transition-all duration-200 ${
-                    isActive
-                      ? "border-[#ff8c3a] bg-[#ff8c3a] text-black shadow-[0_0_0_1px_rgba(255,140,58,0.2),0_0_24px_rgba(255,140,58,0.24)]"
-                      : "border-[#34343f] bg-[#111119] text-[#9f9fac] hover:border-[#ff8c3a] hover:text-white"
-                  }`}
-                  style={{ fontFamily: "var(--font-rajdhani)" }}
-                >
-                  {filter}
-                </button>
-              );
-            })}
+            {["ALL", "2D ANIMATION", "GAME ART", "VFX", "CINEMATIC"].map(
+              (filter) => {
+                const isActive = filter === "ALL";
+                return (
+                  <button
+                    key={filter}
+                    className={`relative rounded-lg border px-7 py-2 text-xs font-bold uppercase tracking-[0.1em] transition-all duration-200 ${
+                      isActive
+                        ? "border-[#ff8c3a] bg-[#ff8c3a] text-black shadow-[0_0_0_1px_rgba(255,140,58,0.2),0_0_24px_rgba(255,140,58,0.24)]"
+                        : "border-[#34343f] bg-[#111119] text-[#9f9fac] hover:border-[#ff8c3a] hover:text-white"
+                    }`}
+                    style={{ fontFamily: "var(--font-rajdhani)" }}
+                  >
+                    {filter}
+                  </button>
+                );
+              },
+            )}
             <button
               className="rounded-lg border border-[#34343f] bg-[#111119] px-6 py-2 text-xs font-bold uppercase tracking-[0.1em] text-[#9f9fac] transition-all hover:border-[#ff8c3a] hover:text-white"
               style={{ fontFamily: "var(--font-rajdhani)" }}
             >
               SORT BY
-              <svg className="ml-2 inline-block h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M19 9l-7 7-7-7" />
+              <svg
+                className="ml-2 inline-block h-3 w-3"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={3}
+                  d="M19 9l-7 7-7-7"
+                />
               </svg>
             </button>
           </div>
 
           <div className="grid auto-rows-[190px] gap-3 md:auto-rows-[220px] lg:grid-cols-4 lg:auto-rows-[190px]">
             {heroProjects.map((project, index) => {
-              const isActive = activeHeroProject === index;
+              const isActive = activeProject === index;
+              const layoutClass = (heroLayouts[activeProject] ?? heroLayouts[0])[index];
+
               return (
                 <motion.article
                   key={`${project.title}-${index}`}
-                  initial={{ opacity: 0, y: 20 }}
+                  layout
+                  initial={{ opacity: 0, y: 16 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true, amount: 0.2 }}
-                  transition={{ delay: index * 0.08, duration: 0.45, ease: "easeOut" }}
-                  onHoverStart={() => setActiveHeroProject(index)}
-                  animate={{ opacity: activeHeroProject === index ? 1 : 0.72 }}
-                  className={`group relative overflow-hidden rounded-xl border bg-[#1a1a1a] transition-all duration-300 ${
-                    isActive
-                      ? "border-[#ff8c3a]/45 shadow-[0_0_40px_rgba(255,122,26,0.2)] lg:col-span-2 lg:row-span-2"
-                      : "border-white/10 lg:col-span-1 lg:row-span-1"
-                  }`}
+                  transition={{
+                    layout: { type: "spring", stiffness: 135, damping: 24, mass: 0.9 },
+                    delay: index * 0.06,
+                    duration: 0.25,
+                    ease: "easeOut",
+                  }}
+                  onHoverStart={() => handleProjectHover(index)}
+                  onHoverEnd={clearHoverIntent}
+                  whileHover={{ y: -3 }}
+                  animate={{
+                    opacity: isActive ? 1 : 0.72,
+                    scale: 1,
+                  }}
+                  className={`group relative overflow-hidden rounded-xl border bg-[#1a1a1a] ${
+                    isActive ? "border-[#ff8c3a]/45 shadow-[0_0_40px_rgba(255,122,26,0.2)]" : "border-white/10"
+                  } ${layoutClass}`}
+                  style={{ zIndex: isActive ? 30 : 10 }}
                 >
-                  {isActive && <div className="pointer-events-none absolute -inset-3 -z-10 rounded-[18px] bg-[#ff8c3a]/22 blur-2xl" />}
+                  {isActive && (
+                    <div className="pointer-events-none absolute -inset-3 -z-10 rounded-[18px] bg-[#ff8c3a]/22 blur-2xl" />
+                  )}
                   <div className="relative h-full min-h-[220px] lg:min-h-full">
-                    <Image src={project.image} alt={project.title} fill className="object-cover" />
+                    <Image
+                      src={project.image}
+                      alt={project.title}
+                      fill
+                      className="object-cover transition-transform duration-500 ease-out group-hover:scale-[1.03]"
+                    />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/25 to-transparent" />
                     {isActive && (
                       <div className="absolute left-6 top-6">
@@ -501,8 +661,10 @@ export default function Demo4EditorialSections() {
                       </div>
                     )}
                     <div className={isActive ? "absolute bottom-0 left-0 right-0 p-8" : "absolute bottom-0 left-0 right-0 p-4"}>
-                      <p className={`${isActive ? "mb-1 text-[10px]" : "mb-1 text-[9px]"} font-bold uppercase tracking-[0.15em] text-[#ff8c3a]`}>
-                        {index === 0 ? "2D ANIMATION" : project.category.toUpperCase()}
+                      <p
+                        className={`${isActive ? "mb-1 text-[10px]" : "mb-1 text-[9px]"} font-bold uppercase tracking-[0.15em] text-[#ff8c3a]`}
+                      >
+                        {project.category.toUpperCase()}
                       </p>
                       <h3
                         className={`${isActive ? "mb-2 text-4xl" : "mb-1 text-lg"} font-bold leading-tight text-white`}
@@ -535,23 +697,40 @@ export default function Demo4EditorialSections() {
                 key={`${project.title}-bottom-${index}`}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
+                whileHover={{ y: -4, scale: 1.03 }}
                 viewport={{ once: true, amount: 0.2 }}
-                transition={{ delay: (index + 4) * 0.08, duration: 0.45, ease: "easeOut" }}
+                transition={{
+                  delay: (index + 4) * 0.08,
+                  duration: 0.45,
+                  ease: "easeOut",
+                }}
                 className="group relative overflow-hidden rounded-xl border border-white/10 bg-[#1a1a1a]"
               >
                 <div className="relative h-full min-h-[156px]">
-                  <Image src={project.image} alt={project.title} fill className="object-cover" />
+                  <Image
+                    src={project.image}
+                    alt={project.title}
+                    fill
+                    className="object-cover transition-transform duration-500 ease-out group-hover:scale-[1.04]"
+                  />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/25 to-transparent" />
                   <div className="absolute bottom-0 left-0 right-0 p-3">
                     <p className="mb-0.5 text-[8px] font-bold uppercase tracking-[0.15em] text-[#ff8c3a]">
                       ILLUSTRATION SUPPORT
                     </p>
-                    <h3 className="mb-1 text-base font-bold leading-tight text-white" style={{ fontFamily: "var(--font-rajdhani)" }}>
+                    <h3
+                      className="mb-1 text-base font-bold leading-tight text-white"
+                      style={{ fontFamily: "var(--font-rajdhani)" }}
+                    >
                       {project.title}
                     </h3>
                     <div className="flex items-center justify-between">
-                      <span className="text-[9px] text-[#9a9aaa]">2024 • UI, Illustration</span>
-                      <span className="text-[9px] font-semibold uppercase tracking-[0.15em] text-[#8d8d9d]">Demo</span>
+                      <span className="text-[9px] text-[#9a9aaa]">
+                        2024 • UI, Illustration
+                      </span>
+                      <span className="text-[9px] font-semibold uppercase tracking-[0.15em] text-[#8d8d9d]">
+                        Demo
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -560,7 +739,6 @@ export default function Demo4EditorialSections() {
           </div>
         </div>
       </section>
-
     </div>
   );
 }
