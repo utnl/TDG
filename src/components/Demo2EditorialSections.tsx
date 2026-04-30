@@ -998,6 +998,7 @@ export default function Demo2EditorialSections() {
             index="05"
             eyebrow="Trust"
             title="OUR CLIENTS"
+            copy="Teams we’ve supported across art direction, animation, and VFX delivery."
             highlight="CLIENTS"
             variant="outline"
             accentColor={accentColor}

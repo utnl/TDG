@@ -23,6 +23,12 @@ import { section } from 'framer-motion/client';
 const changaOne = Changa_One({ weight: '400', subsets: ['latin'] });
 const nunitoSans = Nunito_Sans({ weight: ['400', '600', '700'], subsets: ['latin'] });
 
+function isProbablyVideoSrc(src: unknown) {
+  if (typeof src !== "string") return false;
+  const lower = src.toLowerCase();
+  return lower.endsWith(".mp4") || lower.endsWith(".webm") || lower.startsWith("blob:");
+}
+
 // --- 1. CLASSIC THUMBNAIL CARD ---
 function ClassicThumbnailCard({ video, isActive, onClick, index, cardDim, cardVignette }: any) {
   return (
@@ -37,7 +43,22 @@ function ClassicThumbnailCard({ video, isActive, onClick, index, cardDim, cardVi
     >
       <div className="absolute inset-0 overflow-hidden" style={{ clipPath: "polygon(25% 0%, 100% 0%, 100% 96%, 75% 100%, 0% 100%, 0% 4%)" }}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={video.thumbnail} alt={video.name} className="absolute inset-0 w-full h-full object-cover" />
+        {video?.thumbnailIsVideo || isProbablyVideoSrc(video?.thumbnail) ? (
+          <video
+            className="absolute inset-0 h-full w-full object-cover"
+            src={video.thumbnail}
+            muted
+            playsInline
+            loop
+            autoPlay
+          />
+        ) : (
+          <img
+            src={video.thumbnail}
+            alt={video.name}
+            className="absolute inset-0 w-full h-full object-cover"
+          />
+        )}
         <div className={`absolute inset-0 transition-all duration-300 ${isActive ? "bg-black/8" : ""}`} style={!isActive ? { backgroundColor: `rgba(0,0,0,${cardDim / 100})` } : {}} />
         {isActive && <div className="absolute left-0 right-0 h-px bg-gradient-to-r from-transparent via-amber-400/40 to-transparent pointer-events-none animate-[scan_3s_linear_infinite]" />}
         {isActive && (
@@ -113,7 +134,22 @@ function FancyThumbnailCard({ video, isActive, onClick, index, cardDim, cardVign
         <div className="absolute inset-[3px] border border-amber-600/40 pointer-events-none z-10" />
         <div className="absolute inset-[6px] overflow-hidden bg-black">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={video.thumbnail} alt={video.name} className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+          {video?.thumbnailIsVideo || isProbablyVideoSrc(video?.thumbnail) ? (
+            <video
+              className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
+              src={video.thumbnail}
+              muted
+              playsInline
+              loop
+              autoPlay
+            />
+          ) : (
+            <img
+              src={video.thumbnail}
+              alt={video.name}
+              className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+            />
+          )}
           <div className={`absolute inset-0 transition-colors duration-300 ${isActive ? 'bg-black/0' : ''}`} style={!isActive ? { backgroundColor: `rgba(0,0,0,${cardDim / 100})` } : {}} />
           {cardVignette && <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-black/95 via-black/80 to-transparent" />}
         </div>
@@ -210,7 +246,22 @@ function ImageFrameThumbnailCard({ video, isActive, onClick, index, cardDim, car
       <div className={`absolute inset-0 bg-black rounded-md overflow-hidden transition-shadow duration-300 ${isActive ? 'shadow-[0_0_30px_rgba(245,158,11,0.5)]' : 'shadow-2xl'}`}>
 
         {/* IMAGE BACKGROUND */}
-        <img src={video.thumbnail} alt={video.name} className="absolute inset-0 w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110" />
+        {video?.thumbnailIsVideo || isProbablyVideoSrc(video?.thumbnail) ? (
+          <video
+            className="absolute inset-0 h-full w-full object-cover transition-transform duration-1000 group-hover:scale-110"
+            src={video.thumbnail}
+            muted
+            playsInline
+            loop
+            autoPlay
+          />
+        ) : (
+          <img
+            src={video.thumbnail}
+            alt={video.name}
+            className="absolute inset-0 w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
+          />
+        )}
 
         {/* DIM OVERLAY */}
         <div className={`absolute inset-0 transition-colors duration-300 ${isActive ? 'bg-black/0' : ''}`} style={!isActive ? { backgroundColor: `rgba(0,0,0,${cardDim / 100})` } : {}} />

@@ -305,48 +305,6 @@ function SectionIntro({
     );
   }
 
-  if (variant === "frame") {
-    return (
-      <motion.div
-        initial={{ opacity: 0, scale: 0.98 }}
-        whileInView={{ opacity: 1, scale: 1 }}
-        viewport={{ once: true, amount: 0.25 }}
-        transition={{ duration: 0.5, ease: "easeOut" }}
-        className={compact ? "mb-10 md:mb-12" : "mb-14 md:mb-20"}
-      >
-        <div className="relative mx-auto w-fit px-8 py-4">
-          {/* Decorative brackets */}
-          <div className="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-white/20" />
-          <div className="absolute top-0 right-0 w-4 h-4 border-t-2 border-r-2 border-white/20" />
-          <div className="absolute bottom-0 left-0 w-4 h-4 border-b-2 border-l-2 border-white/20" />
-          <div className="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-[#ff7a1a]" />
-
-          <h2
-            className={`text-4xl font-black uppercase tracking-tight md:text-5xl lg:text-6xl ${titleClass}`}
-            style={{ fontFamily: "var(--font-rajdhani)" }}
-          >
-            {renderedTitle.length === 2 ? (
-              <>
-                {renderedTitle[0]}
-                <span style={accentStyle}>{highlight}</span>
-                {renderedTitle[1]}
-              </>
-            ) : (
-              title
-            )}
-          </h2>
-        </div>
-        <div className="text-center mt-6">
-          <p
-            className={`mx-auto max-w-2xl text-sm leading-relaxed opacity-60 ${copyClass}`}
-          >
-            {copy}
-          </p>
-        </div>
-      </motion.div>
-    );
-  }
-
   return (
     <motion.div
       initial={{ opacity: 0, y: 18 }}
@@ -437,6 +395,32 @@ export default function Demo4EditorialSections() {
     { col: 4, row: 3 }, // 8
   ];
 
+  // Keep these as literal Tailwind classes so the compiler always generates them.
+  // Dynamic templates like `lg:col-start-${n}` can cause missing classes and grid "breaks" on hover.
+  const COL_START = [
+    "",
+    "lg:col-start-1",
+    "lg:col-start-2",
+    "lg:col-start-3",
+    "lg:col-start-4",
+  ] as const;
+  const ROW_START = [
+    "",
+    "lg:row-start-1",
+    "lg:row-start-2",
+    "lg:row-start-3",
+  ] as const;
+  const COL_SPAN = ["", "lg:col-span-1", "lg:col-span-2"] as const;
+  const ROW_SPAN = ["", "lg:row-span-1", "lg:row-span-2"] as const;
+
+  const gridClass = (opts: {
+    colStart: 1 | 2 | 3 | 4;
+    rowStart: 1 | 2 | 3;
+    colSpan: 1 | 2;
+    rowSpan: 1 | 2;
+  }) =>
+    `${COL_START[opts.colStart]} ${ROW_START[opts.rowStart]} ${COL_SPAN[opts.colSpan]} ${ROW_SPAN[opts.rowSpan]}`;
+
   const getGridLayoutForActive = (activeIndex: number): string[] => {
     const safeActive = Math.max(0, Math.min(8, activeIndex));
     const origin = basePositions[safeActive] ?? basePositions[0];
@@ -459,15 +443,23 @@ export default function Demo4EditorialSections() {
     }
 
     const classes = new Array<string>(9);
-    classes[safeActive] =
-      `lg:col-start-${bigColStart} lg:row-start-${bigRowStart} lg:col-span-2 lg:row-span-2`;
+    classes[safeActive] = gridClass({
+      colStart: bigColStart as 1 | 2 | 3,
+      rowStart: bigRowStart as 1 | 2,
+      colSpan: 2,
+      rowSpan: 2,
+    });
 
     let cellIdx = 0;
     for (let i = 0; i < 9; i++) {
       if (i === safeActive) continue;
       const cell = availableCells[cellIdx++];
-      classes[i] =
-        `lg:col-start-${cell.col} lg:row-start-${cell.row} lg:col-span-1 lg:row-span-1`;
+      classes[i] = gridClass({
+        colStart: cell.col as 1 | 2 | 3 | 4,
+        rowStart: cell.row as 1 | 2 | 3,
+        colSpan: 1,
+        rowSpan: 1,
+      });
     }
 
     return classes;
