@@ -377,8 +377,8 @@ export default function Demo4EditorialSections() {
     hoverTimeoutRef.current = setTimeout(() => {
       setActiveProject(index);
       // Prevent immediate oscillation while grid reflows under cursor.
-      hoverLockUntilRef.current = Date.now() + 180;
-    }, 90);
+      hoverLockUntilRef.current = Date.now() + 420;
+    }, 120);
   };
 
   const clearHoverIntent = () => {
@@ -622,7 +622,10 @@ export default function Demo4EditorialSections() {
             </button>
           </div>
 
-          <div className="grid auto-rows-[156px] grid-flow-dense gap-3 md:auto-rows-[220px] lg:grid-cols-4 lg:auto-rows-[190px]">
+          <div
+            className="grid auto-rows-[156px] grid-flow-dense gap-3 md:auto-rows-[220px] lg:grid-cols-4 lg:auto-rows-[190px]"
+            onPointerLeave={clearHoverIntent}
+          >
             {projects.map((project, index) => {
               const isActive = index === activeProject;
               const layoutClass = getGridLayoutForActive(activeProject)[index];
@@ -640,8 +643,7 @@ export default function Demo4EditorialSections() {
                     duration: 0.25,
                     ease: "easeOut",
                   }}
-                  onHoverStart={() => handleProjectHover(index)}
-                  onHoverEnd={clearHoverIntent}
+                  onPointerEnter={() => handleProjectHover(index)}
                   whileHover={{ y: -3 }}
                   animate={{ opacity: isActive ? 1 : 0.72 }}
                   className={`group relative overflow-hidden rounded-xl border bg-[#1a1a1a] ${
