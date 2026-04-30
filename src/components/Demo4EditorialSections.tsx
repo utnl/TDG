@@ -6,29 +6,131 @@ import { useRef, useState } from "react";
 
 type TitleVariant = "outline" | "indexed" | "studio" | "frame";
 
-const services = [
+type Service = {
+  title: string;
+  icon: "animation" | "art" | "vfx";
+  tag: string;
+  href: string;
+  statValue: string;
+  statLabel: string;
+  description: string;
+  image: string;
+};
+
+const services: Service[] = [
   {
     title: "2D Animation",
+    icon: "animation",
     tag: "Motion-first",
+    href: "/2d-animation",
+    statValue: "50+",
+    statLabel: "Completed projects",
     description:
       "Stylized attack loops, promo motion, idle cycles, and lightweight animated sequences built for game readability.",
     image: "/images/service-animation.jpg",
   },
   {
     title: "2D Art",
+    icon: "art",
     tag: "Art direction",
+    href: "/2d-art",
+    statValue: "50+",
+    statLabel: "Completed projects",
     description:
       "Character sheets, splash illustrations, UI-support art, and painted assets tuned for a cleaner, friendlier game look.",
     image: "/sinspired/character_6-min-1024x970.jpg",
   },
   {
     title: "2D VFX",
+    icon: "vfx",
     tag: "Impact polish",
+    href: "/2d-vfx",
+    statValue: "50+",
+    statLabel: "Completed projects",
     description:
       "Skill bursts, hit flashes, elemental trails, and screen-space accents that add energy without pushing the style too hard.",
     image: "/sinspired/Game_Animation-min-1024x612.jpg",
   },
 ];
+
+function ServiceIcon({
+  type,
+  color,
+}: {
+  type: "animation" | "art" | "vfx";
+  color: string;
+}) {
+  const common = {
+    width: 18,
+    height: 18,
+    viewBox: "0 0 24 24",
+    fill: "none" as const,
+    stroke: "currentColor",
+    strokeWidth: 2.2,
+    strokeLinecap: "round" as const,
+    strokeLinejoin: "round" as const,
+    style: { color },
+  };
+
+  if (type === "animation") {
+    return (
+      <svg {...common}>
+        <path d="M8 5v14l11-7z" />
+      </svg>
+    );
+  }
+
+  if (type === "art") {
+    return (
+      <svg {...common}>
+        <path d="M12 3a9 9 0 0 0 0 18c1.2 0 2-1 .9-2.1-.7-.7-.9-1.8-.5-2.7.6-1.3 2.1-1.2 3.3-1.2a4.8 4.8 0 0 0 0-9.6H12z" />
+        <path d="M7.5 10.5h.01" />
+        <path d="M9.7 7.9h.01" />
+        <path d="M12.6 7.3h.01" />
+        <path d="M15.3 8.2h.01" />
+      </svg>
+    );
+  }
+
+  return (
+    <svg {...common}>
+      <path d="M12 3c.8 2.8-.2 4.2-2 6 2.8-.6 4.8.4 6 3 1-3.2 2.8-4.2 5-4-2.4-1.2-4.1-2.7-4-5-1.3 2.2-2.9 2.6-5 0z" />
+      <path d="M6 13c.5 1.6-.2 2.5-1.5 3.5 1.7-.2 2.7.4 3.3 1.8.7-2 1.8-2.6 3.1-2.6-1.5-.7-2.5-1.6-2.4-3-.7 1.4-1.6 1.7-2.5.3z" />
+    </svg>
+  );
+}
+
+function ServiceScribble({ color }: { color: string }) {
+  return (
+    <svg
+      className="pointer-events-none absolute right-4 top-4 h-10 w-16 opacity-70"
+      viewBox="0 0 80 48"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M6 30C18 22 33 18 48 15C60 13 69 11 76 8"
+        stroke={color}
+        strokeWidth="2.6"
+        strokeLinecap="round"
+      />
+      <path
+        d="M46 15C55 16 64 20 72 26"
+        stroke={color}
+        strokeWidth="2.1"
+        strokeLinecap="round"
+        opacity="0.75"
+      />
+      <path
+        d="M8 34C21 25 35 21 52 17C63 15 70 13 78 10"
+        stroke="#ffffff"
+        strokeWidth="1.1"
+        strokeLinecap="round"
+        opacity="0.18"
+      />
+    </svg>
+  );
+}
 
 const featuredProjects = [
   {
@@ -170,7 +272,7 @@ function SectionIntro({
             >
               // {index}
             </span>
-            <div className="w-10 h-[1px] bg-white/10" />
+            <div className="h-px w-10 bg-white/10" />
             <span className="text-[10px] font-bold uppercase tracking-[0.4em] text-white/30">
               {index === "01"
                 ? "Capabilities"
@@ -357,13 +459,15 @@ export default function Demo4EditorialSections() {
     }
 
     const classes = new Array<string>(9);
-    classes[safeActive] = `lg:col-start-${bigColStart} lg:row-start-${bigRowStart} lg:col-span-2 lg:row-span-2`;
+    classes[safeActive] =
+      `lg:col-start-${bigColStart} lg:row-start-${bigRowStart} lg:col-span-2 lg:row-span-2`;
 
     let cellIdx = 0;
     for (let i = 0; i < 9; i++) {
       if (i === safeActive) continue;
       const cell = availableCells[cellIdx++];
-      classes[i] = `lg:col-start-${cell.col} lg:row-start-${cell.row} lg:col-span-1 lg:row-span-1`;
+      classes[i] =
+        `lg:col-start-${cell.col} lg:row-start-${cell.row} lg:col-span-1 lg:row-span-1`;
     }
 
     return classes;
@@ -460,68 +564,105 @@ export default function Demo4EditorialSections() {
             )}
           </div>
 
-          <div className="grid gap-6 md:grid-cols-3">
+          <div className="mx-auto mt-6 grid max-w-5xl items-end gap-5 md:mt-8 md:grid-cols-3 lg:gap-6">
             {services.map((service, index) => (
               <motion.article
                 key={service.title}
-                initial={{ opacity: 0, y: 28, scale: 0.985 }}
+                initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, amount: 0.2 }}
+                viewport={{ once: true, amount: 0.3 }}
                 transition={{
-                  delay: index * 0.1,
-                  duration: 0.55,
+                  delay: 0.08 * (index + 1),
+                  duration: 0.45,
                   ease: "easeOut",
                 }}
-                whileHover={{ y: -6 }}
-                className="group overflow-hidden rounded-[24px] border border-white/10 bg-[#1a1a1a] shadow-[0_20px_60px_rgba(0,0,0,0.22)]"
+                className="group relative self-end overflow-visible hover:z-10 h-[460px]"
               >
-                <div className="relative aspect-[4/4.3] overflow-hidden">
-                  <motion.div
-                    className="absolute inset-0"
-                    whileHover={{ scale: 1.04, y: -4 }}
-                    transition={{ duration: 0.45, ease: "easeOut" }}
-                  >
+                {/* Trick: empty anchor overlays whole card */}
+                <a
+                  href={service.href}
+                  aria-label={`Open ${service.title}`}
+                  className="absolute inset-0 z-10"
+                />
+
+                {/* Real card (4 blocks). It's absolute so it can grow without pushing siblings. */}
+                <div className="absolute bottom-0 left-0 right-0 z-20 overflow-hidden rounded-[24px] border border-white/10 bg-[#0f1116] shadow-[0_20px_60px_rgba(0,0,0,0.22)] transition-[max-height,box-shadow,border-color,transform] duration-400 ease-[cubic-bezier(0.25,0.1,0.25,1)] will-change-transform max-h-[460px] group-hover:max-h-[540px] group-hover:translate-y-10 group-hover:border-[#ff8c3a]/35 group-hover:shadow-[0_32px_90px_rgba(0,0,0,0.42)]">
+                  {/* 1) Image */}
+                  <div className="relative h-[280px] overflow-hidden">
                     <Image
                       src={service.image}
                       alt={service.title}
                       fill
                       className="object-cover"
                     />
-                  </motion.div>
-                  <motion.div
-                    className="absolute inset-0 bg-gradient-to-t from-black/26 via-transparent to-transparent"
-                    whileHover={{ opacity: 0.72 }}
-                    transition={{ duration: 0.35 }}
-                  />
-                </div>
-                <div className="p-6">
-                  <span className="inline-flex rounded-full bg-[#2a1a0d] px-3 py-1 text-[11px] uppercase tracking-[0.14em] text-[#ff9f45]">
-                    {service.tag}
-                  </span>
-                  <h3
-                    className="mt-4 text-[28px] font-semibold leading-tight text-white"
-                    style={{ fontFamily: "var(--font-rajdhani)" }}
-                  >
-                    {service.title}
-                  </h3>
-                  <motion.div
-                    className="mt-3 h-[2px] rounded-full"
-                    style={{
-                      backgroundColor: accentColor,
-                      transformOrigin: "left center",
-                    }}
-                    initial={{ scaleX: 0 }}
-                    whileInView={{ scaleX: 1 }}
-                    viewport={{ once: true, amount: 0.35 }}
-                    transition={{
-                      delay: 0.18 + index * 0.1,
-                      duration: 0.45,
-                      ease: "easeOut",
-                    }}
-                  />
-                  <p className="mt-3 text-sm leading-6 text-white/68">
-                    {service.description}
-                  </p>
+                  </div>
+
+                  {/* 2) Title + 3) Desc (hidden) + 4) Stat */}
+                  <div className="flex flex-1 flex-col bg-[#212933] px-6 py-6">
+                    <div className="flex items-start justify-between gap-4 transition-transform duration-400 ease-[cubic-bezier(0.25,0.1,0.25,1)]">
+                      <h6 className="text-[22px] font-semibold text-white tracking-tight">
+                        {service.title}
+                      </h6>
+                      <span
+                        className="mt-0.5 inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-white/10 bg-black/25"
+                        title={service.title}
+                      >
+                        <ServiceIcon type={service.icon} color={accentColor} />
+                      </span>
+                    </div>
+
+                    {/* Desc: hidden by default, reveals on hover and pushes stat down */}
+                    <div className="max-h-0 overflow-hidden opacity-0 translate-y-1 transition-[max-height,opacity,margin,transform] duration-400 ease-[cubic-bezier(0.25,0.1,0.25,1)] group-hover:mt-3 group-hover:max-h-28 group-hover:opacity-100 group-hover:translate-y-0">
+                      <p className="text-sm leading-6 text-white/70">
+                        {service.description}
+                      </p>
+                    </div>
+
+                    <div className="mt-5 flex items-center justify-between gap-3">
+                      <div className="flex items-center gap-3 text-white/70">
+                        <span className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/15 bg-black/15">
+                          <svg
+                            width="18"
+                            height="18"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          >
+                            <path d="M8 21h8" />
+                            <path d="M12 17v4" />
+                            <path d="M7 4h10" />
+                            <path d="M17 4v7a5 5 0 0 1-10 0V4" />
+                          </svg>
+                        </span>
+                        <div>
+                          <div className="text-sm font-semibold text-white">
+                            {service.statValue}
+                          </div>
+                          <div className="text-[11px] text-white/45">
+                            {service.statLabel}
+                          </div>
+                        </div>
+                      </div>
+
+                      <span className="inline-flex h-11 w-11 items-center justify-center rounded-full bg-black/35 text-white/85 transition-colors duration-200 group-hover:bg-[#ffb400] group-hover:text-black">
+                        <svg
+                          width="18"
+                          height="18"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2.2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        >
+                          <path d="M9 18l6-6-6-6" />
+                        </svg>
+                      </span>
+                    </div>
+                  </div>
                 </div>
               </motion.article>
             ))}
@@ -535,37 +676,128 @@ export default function Demo4EditorialSections() {
       >
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_85%_50%,rgba(57,45,138,0.22),transparent_40%)]" />
         <svg
-          className="pointer-events-none absolute right-[13%] top-[24%] h-20 w-40 opacity-70"
-          viewBox="0 0 160 80"
+          className="pointer-events-none absolute right-[10%] top-[20%] h-24 w-56 opacity-80"
+          viewBox="0 0 280 120"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
         >
-          <path
-            d="M6 58C34 44 63 36 95 32C119 29 136 26 154 20"
-            stroke="#ff8c3a"
-            strokeWidth="2.5"
-            strokeLinecap="round"
-          />
-          <path
-            d="M95 32C107 35 120 39 133 47"
-            stroke="#ff8c3a"
-            strokeWidth="2"
-            strokeLinecap="round"
-            opacity="0.7"
-          />
+          <defs>
+            <linearGradient
+              id="tdgScribbleOrange"
+              x1="0"
+              y1="0"
+              x2="280"
+              y2="120"
+              gradientUnits="userSpaceOnUse"
+            >
+              <stop stopColor="#ff8c3a" />
+              <stop offset="1" stopColor="#ffb34f" />
+            </linearGradient>
+            <filter
+              id="tdgGlowOrange"
+              x="-20%"
+              y="-20%"
+              width="140%"
+              height="140%"
+            >
+              <feGaussianBlur stdDeviation="2.2" result="blur" />
+              <feColorMatrix
+                in="blur"
+                type="matrix"
+                values="1 0 0 0 0  0 0.55 0 0 0  0 0 0.25 0 0  0 0 0 1 0"
+              />
+              <feMerge>
+                <feMergeNode />
+                <feMergeNode in="SourceGraphic" />
+              </feMerge>
+            </filter>
+          </defs>
+          <g filter="url(#tdgGlowOrange)">
+            <path
+              d="M16 86C48 66 86 56 126 50C168 43 205 40 244 28"
+              stroke="url(#tdgScribbleOrange)"
+              strokeWidth="3.4"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+            <path
+              d="M122 50C146 52 174 60 198 74"
+              stroke="url(#tdgScribbleOrange)"
+              strokeWidth="2.4"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              opacity="0.72"
+            />
+            <path
+              d="M18 92C55 70 92 60 136 52C174 45 210 41 252 30"
+              stroke="#ffd1a8"
+              strokeWidth="1.2"
+              strokeLinecap="round"
+              opacity="0.35"
+            />
+          </g>
         </svg>
+
         <svg
-          className="pointer-events-none absolute bottom-[12%] right-[5%] h-16 w-36 opacity-40"
-          viewBox="0 0 144 64"
+          className="pointer-events-none absolute bottom-[10%] right-[4%] h-24 w-56 opacity-55"
+          viewBox="0 0 280 120"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
         >
-          <path
-            d="M5 44C28 35 50 30 79 25C101 21 122 14 139 8"
-            stroke="#8a78ff"
-            strokeWidth="2.2"
-            strokeLinecap="round"
-          />
+          <defs>
+            <linearGradient
+              id="tdgScribblePurple"
+              x1="0"
+              y1="0"
+              x2="280"
+              y2="120"
+              gradientUnits="userSpaceOnUse"
+            >
+              <stop stopColor="#7b6dff" stopOpacity="0.95" />
+              <stop offset="1" stopColor="#b7a8ff" stopOpacity="0.85" />
+            </linearGradient>
+            <filter
+              id="tdgGlowPurple"
+              x="-20%"
+              y="-20%"
+              width="140%"
+              height="140%"
+            >
+              <feGaussianBlur stdDeviation="2.5" result="blur" />
+              <feColorMatrix
+                in="blur"
+                type="matrix"
+                values="0.55 0 0 0 0  0 0.45 0 0 0  0 0 1 0 0  0 0 0 1 0"
+              />
+              <feMerge>
+                <feMergeNode />
+                <feMergeNode in="SourceGraphic" />
+              </feMerge>
+            </filter>
+          </defs>
+          <g filter="url(#tdgGlowPurple)">
+            <path
+              d="M22 78C52 66 88 58 126 54C168 49 206 44 252 34"
+              stroke="url(#tdgScribblePurple)"
+              strokeWidth="3"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+            <path
+              d="M168 49C190 53 214 62 236 74"
+              stroke="url(#tdgScribblePurple)"
+              strokeWidth="2.1"
+              strokeLinecap="round"
+              opacity="0.65"
+            />
+            <path
+              d="M24 84C64 70 102 62 142 56C186 49 222 45 258 36"
+              stroke="#e9e5ff"
+              strokeWidth="1.1"
+              strokeLinecap="round"
+              opacity="0.22"
+            />
+          </g>
         </svg>
         <div
           className="relative z-10 mx-auto"
@@ -581,46 +813,6 @@ export default function Demo4EditorialSections() {
             accentColor={accentColor}
             dark
           />
-
-          <div className="mb-8 flex flex-wrap items-center justify-center gap-3">
-            {["ALL", "2D ANIMATION", "GAME ART", "VFX", "CINEMATIC"].map(
-              (filter) => {
-                const isActive = filter === "ALL";
-                return (
-                  <button
-                    key={filter}
-                    className={`relative rounded-lg border px-7 py-2 text-xs font-bold uppercase tracking-[0.1em] transition-all duration-200 ${
-                      isActive
-                        ? "border-[#ff8c3a] bg-[#ff8c3a] text-black shadow-[0_0_0_1px_rgba(255,140,58,0.2),0_0_24px_rgba(255,140,58,0.24)]"
-                        : "border-[#34343f] bg-[#111119] text-[#9f9fac] hover:border-[#ff8c3a] hover:text-white"
-                    }`}
-                    style={{ fontFamily: "var(--font-rajdhani)" }}
-                  >
-                    {filter}
-                  </button>
-                );
-              },
-            )}
-            <button
-              className="rounded-lg border border-[#34343f] bg-[#111119] px-6 py-2 text-xs font-bold uppercase tracking-[0.1em] text-[#9f9fac] transition-all hover:border-[#ff8c3a] hover:text-white"
-              style={{ fontFamily: "var(--font-rajdhani)" }}
-            >
-              SORT BY
-              <svg
-                className="ml-2 inline-block h-3 w-3"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={3}
-                  d="M19 9l-7 7-7-7"
-                />
-              </svg>
-            </button>
-          </div>
 
           <div
             className="grid auto-rows-[156px] grid-flow-dense gap-3 md:auto-rows-[220px] lg:grid-cols-4 lg:auto-rows-[190px]"
@@ -638,7 +830,12 @@ export default function Demo4EditorialSections() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true, amount: 0.2 }}
                   transition={{
-                    layout: { type: "spring", stiffness: 135, damping: 24, mass: 0.9 },
+                    layout: {
+                      type: "spring",
+                      stiffness: 135,
+                      damping: 24,
+                      mass: 0.9,
+                    },
                     delay: index * 0.05,
                     duration: 0.25,
                     ease: "easeOut",
@@ -647,12 +844,21 @@ export default function Demo4EditorialSections() {
                   whileHover={{ y: -3 }}
                   animate={{ opacity: isActive ? 1 : 0.72 }}
                   className={`group relative overflow-hidden rounded-xl border bg-[#1a1a1a] ${
-                    isActive ? "border-[#ff8c3a]/45 shadow-[0_0_40px_rgba(255,122,26,0.2)]" : "border-white/10"
+                    isActive
+                      ? "border-[#ff8c3a]/85 shadow-[0_0_0_1px_rgba(255,140,58,0.5),0_24px_80px_rgba(0,0,0,0.6),0_0_90px_rgba(255,140,58,0.28)]"
+                      : "border-white/10 shadow-[0_18px_50px_rgba(0,0,0,0.28)]"
                   } ${layoutClass}`}
                   style={{ zIndex: isActive ? 30 : 10 }}
                 >
                   {isActive && (
-                    <div className="pointer-events-none absolute -inset-3 -z-10 rounded-[18px] bg-[#ff8c3a]/22 blur-2xl" />
+                    <>
+                      {/* Outer halo */}
+                      <div className="pointer-events-none absolute -inset-10 -z-10 rounded-[28px] bg-[#ff8c3a]/28 blur-[52px]" />
+                      {/* Inner ring glow */}
+                      <div className="pointer-events-none absolute inset-0 z-10 rounded-xl ring-1 ring-[#ffb25b]/70 shadow-[inset_0_0_0_1px_rgba(255,140,58,0.55)]" />
+                      {/* Top-left hot spot */}
+                      <div className="pointer-events-none absolute -inset-2 -z-10 rounded-[18px] bg-[radial-gradient(circle_at_22%_18%,rgba(255,180,82,0.45),transparent_58%)]" />
+                    </>
                   )}
                   <div className="relative h-full min-h-[156px] lg:min-h-full">
                     <Image
@@ -661,7 +867,7 @@ export default function Demo4EditorialSections() {
                       fill
                       className="object-cover transition-transform duration-500 ease-out group-hover:scale-[1.03]"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/25 to-transparent" />
+                    <div className="absolute inset-0 bg-linear-to-t from-black/90 via-black/25 to-transparent" />
                     {isActive && (
                       <div className="absolute left-6 top-6">
                         <span className="inline-block rounded-sm bg-[#ff8c3a] px-3 py-1 text-[10px] font-bold uppercase tracking-[0.15em] text-black">
@@ -669,8 +875,16 @@ export default function Demo4EditorialSections() {
                         </span>
                       </div>
                     )}
-                    <div className={isActive ? "absolute bottom-0 left-0 right-0 p-8" : "absolute bottom-0 left-0 right-0 p-4"}>
-                      <p className={`${isActive ? "mb-1 text-[10px]" : "mb-1 text-[9px]"} font-bold uppercase tracking-[0.15em] text-[#ff8c3a]`}>
+                    <div
+                      className={
+                        isActive
+                          ? "absolute bottom-0 left-0 right-0 p-8"
+                          : "absolute bottom-0 left-0 right-0 p-4"
+                      }
+                    >
+                      <p
+                        className={`${isActive ? "mb-1 text-[10px]" : "mb-1 text-[9px]"} font-bold uppercase tracking-[0.15em] text-[#ff8c3a]`}
+                      >
                         {project.category.toUpperCase()}
                       </p>
                       <h3
@@ -680,7 +894,13 @@ export default function Demo4EditorialSections() {
                         {project.title}
                       </h3>
                       <div className="flex items-center justify-between">
-                        <span className={isActive ? "text-xs text-[#9a9aaa]" : "text-[10px] text-[#9a9aaa]"}>
+                        <span
+                          className={
+                            isActive
+                              ? "text-xs text-[#9a9aaa]"
+                              : "text-[10px] text-[#9a9aaa]"
+                          }
+                        >
                           2024 • {project.category}
                         </span>
                         {isActive ? (
@@ -688,7 +908,9 @@ export default function Demo4EditorialSections() {
                             View Project
                           </button>
                         ) : (
-                          <span className="text-[10px] font-semibold uppercase tracking-[0.15em] text-[#8d8d9d]">Demo</span>
+                          <span className="text-[10px] font-semibold uppercase tracking-[0.15em] text-[#8d8d9d]">
+                            Demo
+                          </span>
                         )}
                       </div>
                     </div>
