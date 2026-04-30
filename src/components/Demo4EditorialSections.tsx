@@ -564,7 +564,7 @@ export default function Demo4EditorialSections() {
             )}
           </div>
 
-          <div className="mx-auto mt-6 grid max-w-5xl items-end gap-5 md:mt-8 md:grid-cols-3 lg:gap-6">
+          <div className="mx-auto mt-6 grid max-w-5xl items-center gap-5 md:mt-8 md:grid-cols-3 lg:gap-6">
             {services.map((service, index) => (
               <motion.article
                 key={service.title}
@@ -576,19 +576,15 @@ export default function Demo4EditorialSections() {
                   duration: 0.45,
                   ease: "easeOut",
                 }}
-                className="group relative self-end overflow-visible hover:z-10 h-[460px]"
+                className="group relative h-[460px] w-full overflow-visible hover:z-10"
               >
-                {/* Trick: empty anchor overlays whole card */}
-                <a
-                  href={service.href}
-                  aria-label={`Open ${service.title}`}
-                  className="absolute inset-0 z-10"
-                />
-
-                {/* Real card (4 blocks). It's absolute so it can grow without pushing siblings. */}
-                <div className="absolute bottom-0 left-0 right-0 z-20 overflow-hidden rounded-[24px] border border-white/10 bg-[#0f1116] shadow-[0_20px_60px_rgba(0,0,0,0.22)] transition-[max-height,box-shadow,border-color,transform] duration-400 ease-[cubic-bezier(0.25,0.1,0.25,1)] will-change-transform max-h-[460px] group-hover:max-h-[540px] group-hover:translate-y-10 group-hover:border-[#ff8c3a]/35 group-hover:shadow-[0_32px_90px_rgba(0,0,0,0.42)]">
-                  {/* 1) Image */}
-                  <div className="relative h-[280px] overflow-hidden">
+                <div className="absolute left-0 right-0 top-1/2 z-20 flex -translate-y-1/2 flex-col overflow-hidden rounded-[24px] border border-white/10 bg-[#212933] shadow-[0_20px_60px_rgba(0,0,0,0.22)] transition-all duration-500 ease-[cubic-bezier(0.25,0.1,0.25,1)] group-hover:border-[#ff8c3a]/35 group-hover:shadow-[0_32px_90px_rgba(0,0,0,0.42)]">
+                  <a
+                    href={service.href}
+                    aria-label={`Open ${service.title}`}
+                    className="absolute inset-0 z-10"
+                  />
+                  <div className="relative h-[250px] w-full shrink-0 overflow-hidden">
                     <Image
                       src={service.image}
                       alt={service.title}
@@ -597,60 +593,43 @@ export default function Demo4EditorialSections() {
                     />
                   </div>
 
-                  {/* 2) Title + 3) Desc (hidden) + 4) Stat */}
-                  <div className="flex flex-1 flex-col bg-[#212933] px-6 py-6">
-                    <div className="flex items-start justify-between gap-4 transition-transform duration-400 ease-[cubic-bezier(0.25,0.1,0.25,1)]">
-                      <h6 className="text-[22px] font-semibold text-white tracking-tight">
+                  <div className="flex flex-col px-6 py-5">
+                    <div className="flex items-center justify-between gap-4">
+                      <h6 className="text-[24px] font-semibold leading-tight text-white tracking-tight">
                         {service.title}
                       </h6>
                       <span
-                        className="mt-0.5 inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-white/10 bg-black/25"
+                        className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-white/10 bg-black/25"
                         title={service.title}
                       >
                         <ServiceIcon type={service.icon} color={accentColor} />
                       </span>
                     </div>
 
-                    {/* Desc: hidden by default, reveals on hover and pushes stat down */}
-                    <div className="max-h-0 overflow-hidden opacity-0 translate-y-1 transition-[max-height,opacity,margin,transform] duration-400 ease-[cubic-bezier(0.25,0.1,0.25,1)] group-hover:mt-3 group-hover:max-h-28 group-hover:opacity-100 group-hover:translate-y-0">
-                      <p className="text-sm leading-6 text-white/70">
-                        {service.description}
-                      </p>
+                    <div className="grid grid-rows-[0fr] transition-all duration-500 ease-[cubic-bezier(0.25,0.1,0.25,1)] group-hover:mt-3 group-hover:grid-rows-[1fr]">
+                      <div className="min-h-0 overflow-hidden">
+                        <div className="opacity-0 translate-y-2 transition-all duration-400 ease-out group-hover:opacity-100 group-hover:translate-y-0">
+                          <p className="text-[13px] leading-6 text-white/70">
+                            {service.description}
+                          </p>
+                        </div>
+                      </div>
                     </div>
 
-                    <div className="mt-5 flex items-center justify-between gap-3">
-                      <div className="flex items-center gap-3 text-white/70">
-                        <span className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/15 bg-black/15">
-                          <svg
-                            width="18"
-                            height="18"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          >
-                            <path d="M8 21h8" />
-                            <path d="M12 17v4" />
-                            <path d="M7 4h10" />
-                            <path d="M17 4v7a5 5 0 0 1-10 0V4" />
-                          </svg>
-                        </span>
-                        <div>
-                          <div className="text-sm font-semibold text-white">
-                            {service.statValue}
-                          </div>
-                          <div className="text-[11px] text-white/45">
-                            {service.statLabel}
-                          </div>
+                    <div className="mt-5 grid grid-cols-[1fr_auto] items-center gap-4 pt-2">
+                      <div className="min-w-0">
+                        <div className="text-base font-semibold leading-tight text-white">
+                          {service.statValue}
+                        </div>
+                        <div className="text-[12px] leading-tight text-white/45">
+                          {service.statLabel}
                         </div>
                       </div>
 
-                      <span className="inline-flex h-11 w-11 items-center justify-center rounded-full bg-black/35 text-white/85 transition-colors duration-200 group-hover:bg-[#ffb400] group-hover:text-black">
+                      <span className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-black/35 text-white/85 transition-colors duration-200 group-hover:bg-[#ffb400] group-hover:text-black">
                         <svg
-                          width="18"
-                          height="18"
+                          width="16"
+                          height="16"
                           viewBox="0 0 24 24"
                           fill="none"
                           stroke="currentColor"
