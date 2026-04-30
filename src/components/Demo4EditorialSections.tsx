@@ -321,42 +321,52 @@ export default function Demo4EditorialSections() {
     featuredProjects[7],
     featuredProjects[4],
   ];
-  const heroLayouts: Record<number, string[]> = {
-    0: [
-      "lg:col-start-1 lg:row-start-1 lg:col-span-2 lg:row-span-2",
-      "lg:col-start-3 lg:row-start-1 lg:col-span-1 lg:row-span-1",
-      "lg:col-start-4 lg:row-start-1 lg:col-span-1 lg:row-span-1",
-      "lg:col-start-3 lg:row-start-2 lg:col-span-1 lg:row-span-1",
-      "lg:col-start-4 lg:row-start-2 lg:col-span-1 lg:row-span-1",
-    ],
-    1: [
-      "lg:col-start-1 lg:row-start-1 lg:col-span-1 lg:row-span-1",
-      "lg:col-start-2 lg:row-start-1 lg:col-span-2 lg:row-span-2",
-      "lg:col-start-4 lg:row-start-1 lg:col-span-1 lg:row-span-1",
-      "lg:col-start-1 lg:row-start-2 lg:col-span-1 lg:row-span-1",
-      "lg:col-start-4 lg:row-start-2 lg:col-span-1 lg:row-span-1",
-    ],
-    2: [
-      "lg:col-start-1 lg:row-start-1 lg:col-span-1 lg:row-span-1",
-      "lg:col-start-2 lg:row-start-1 lg:col-span-1 lg:row-span-1",
-      "lg:col-start-3 lg:row-start-1 lg:col-span-2 lg:row-span-2",
-      "lg:col-start-1 lg:row-start-2 lg:col-span-1 lg:row-span-1",
-      "lg:col-start-2 lg:row-start-2 lg:col-span-1 lg:row-span-1",
-    ],
-    3: [
-      "lg:col-start-1 lg:row-start-1 lg:col-span-1 lg:row-span-1",
-      "lg:col-start-2 lg:row-start-1 lg:col-span-1 lg:row-span-1",
-      "lg:col-start-1 lg:row-start-2 lg:col-span-1 lg:row-span-1",
-      "lg:col-start-3 lg:row-start-1 lg:col-span-2 lg:row-span-2",
-      "lg:col-start-2 lg:row-start-2 lg:col-span-1 lg:row-span-1",
-    ],
-    4: [
-      "lg:col-start-1 lg:row-start-1 lg:col-span-1 lg:row-span-1",
-      "lg:col-start-2 lg:row-start-1 lg:col-span-1 lg:row-span-1",
-      "lg:col-start-1 lg:row-start-2 lg:col-span-1 lg:row-span-1",
-      "lg:col-start-2 lg:row-start-2 lg:col-span-1 lg:row-span-1",
-      "lg:col-start-3 lg:row-start-1 lg:col-span-2 lg:row-span-2",
-    ],
+  const projects = [...heroProjects, ...bottomProjects];
+
+  const basePositions: Array<{ col: number; row: number }> = [
+    { col: 1, row: 1 }, // 0 (big default area)
+    { col: 3, row: 1 }, // 1
+    { col: 4, row: 1 }, // 2
+    { col: 3, row: 2 }, // 3
+    { col: 4, row: 2 }, // 4
+    { col: 1, row: 3 }, // 5
+    { col: 2, row: 3 }, // 6
+    { col: 3, row: 3 }, // 7
+    { col: 4, row: 3 }, // 8
+  ];
+
+  const getGridLayoutForActive = (activeIndex: number): string[] => {
+    const safeActive = Math.max(0, Math.min(8, activeIndex));
+    const origin = basePositions[safeActive] ?? basePositions[0];
+
+    const bigColStart = origin.col >= 4 ? 3 : origin.col;
+    const bigRowStart = origin.row >= 3 ? 2 : 1;
+
+    const bigCells = new Set<string>();
+    for (let r = bigRowStart; r <= bigRowStart + 1; r++) {
+      for (let c = bigColStart; c <= bigColStart + 1; c++) {
+        bigCells.add(`${r}-${c}`);
+      }
+    }
+
+    const availableCells: Array<{ row: number; col: number }> = [];
+    for (let r = 1; r <= 3; r++) {
+      for (let c = 1; c <= 4; c++) {
+        if (!bigCells.has(`${r}-${c}`)) availableCells.push({ row: r, col: c });
+      }
+    }
+
+    const classes = new Array<string>(9);
+    classes[safeActive] = `lg:col-start-${bigColStart} lg:row-start-${bigRowStart} lg:col-span-2 lg:row-span-2`;
+
+    let cellIdx = 0;
+    for (let i = 0; i < 9; i++) {
+      if (i === safeActive) continue;
+      const cell = availableCells[cellIdx++];
+      classes[i] = `lg:col-start-${cell.col} lg:row-start-${cell.row} lg:col-span-1 lg:row-span-1`;
+    }
+
+    return classes;
   };
 
   const handleProjectHover = (index: number) => {
@@ -612,10 +622,10 @@ export default function Demo4EditorialSections() {
             </button>
           </div>
 
-          <div className="grid auto-rows-[190px] gap-3 md:auto-rows-[220px] lg:grid-cols-4 lg:auto-rows-[190px]">
-            {heroProjects.map((project, index) => {
-              const isActive = activeProject === index;
-              const layoutClass = (heroLayouts[activeProject] ?? heroLayouts[0])[index];
+          <div className="grid auto-rows-[156px] grid-flow-dense gap-3 md:auto-rows-[220px] lg:grid-cols-4 lg:auto-rows-[190px]">
+            {projects.map((project, index) => {
+              const isActive = index === activeProject;
+              const layoutClass = getGridLayoutForActive(activeProject)[index];
 
               return (
                 <motion.article
@@ -626,17 +636,14 @@ export default function Demo4EditorialSections() {
                   viewport={{ once: true, amount: 0.2 }}
                   transition={{
                     layout: { type: "spring", stiffness: 135, damping: 24, mass: 0.9 },
-                    delay: index * 0.06,
+                    delay: index * 0.05,
                     duration: 0.25,
                     ease: "easeOut",
                   }}
                   onHoverStart={() => handleProjectHover(index)}
                   onHoverEnd={clearHoverIntent}
                   whileHover={{ y: -3 }}
-                  animate={{
-                    opacity: isActive ? 1 : 0.72,
-                    scale: 1,
-                  }}
+                  animate={{ opacity: isActive ? 1 : 0.72 }}
                   className={`group relative overflow-hidden rounded-xl border bg-[#1a1a1a] ${
                     isActive ? "border-[#ff8c3a]/45 shadow-[0_0_40px_rgba(255,122,26,0.2)]" : "border-white/10"
                   } ${layoutClass}`}
@@ -645,7 +652,7 @@ export default function Demo4EditorialSections() {
                   {isActive && (
                     <div className="pointer-events-none absolute -inset-3 -z-10 rounded-[18px] bg-[#ff8c3a]/22 blur-2xl" />
                   )}
-                  <div className="relative h-full min-h-[220px] lg:min-h-full">
+                  <div className="relative h-full min-h-[156px] lg:min-h-full">
                     <Image
                       src={project.image}
                       alt={project.title}
@@ -661,9 +668,7 @@ export default function Demo4EditorialSections() {
                       </div>
                     )}
                     <div className={isActive ? "absolute bottom-0 left-0 right-0 p-8" : "absolute bottom-0 left-0 right-0 p-4"}>
-                      <p
-                        className={`${isActive ? "mb-1 text-[10px]" : "mb-1 text-[9px]"} font-bold uppercase tracking-[0.15em] text-[#ff8c3a]`}
-                      >
+                      <p className={`${isActive ? "mb-1 text-[10px]" : "mb-1 text-[9px]"} font-bold uppercase tracking-[0.15em] text-[#ff8c3a]`}>
                         {project.category.toUpperCase()}
                       </p>
                       <h3
@@ -689,53 +694,6 @@ export default function Demo4EditorialSections() {
                 </motion.article>
               );
             })}
-          </div>
-
-          <div className="mt-3 grid gap-3 md:grid-cols-2 lg:grid-cols-4">
-            {bottomProjects.map((project, index) => (
-              <motion.article
-                key={`${project.title}-bottom-${index}`}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                whileHover={{ y: -4, scale: 1.03 }}
-                viewport={{ once: true, amount: 0.2 }}
-                transition={{
-                  delay: (index + 4) * 0.08,
-                  duration: 0.45,
-                  ease: "easeOut",
-                }}
-                className="group relative overflow-hidden rounded-xl border border-white/10 bg-[#1a1a1a]"
-              >
-                <div className="relative h-full min-h-[156px]">
-                  <Image
-                    src={project.image}
-                    alt={project.title}
-                    fill
-                    className="object-cover transition-transform duration-500 ease-out group-hover:scale-[1.04]"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/25 to-transparent" />
-                  <div className="absolute bottom-0 left-0 right-0 p-3">
-                    <p className="mb-0.5 text-[8px] font-bold uppercase tracking-[0.15em] text-[#ff8c3a]">
-                      ILLUSTRATION SUPPORT
-                    </p>
-                    <h3
-                      className="mb-1 text-base font-bold leading-tight text-white"
-                      style={{ fontFamily: "var(--font-rajdhani)" }}
-                    >
-                      {project.title}
-                    </h3>
-                    <div className="flex items-center justify-between">
-                      <span className="text-[9px] text-[#9a9aaa]">
-                        2024 • UI, Illustration
-                      </span>
-                      <span className="text-[9px] font-semibold uppercase tracking-[0.15em] text-[#8d8d9d]">
-                        Demo
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </motion.article>
-            ))}
           </div>
         </div>
       </section>
