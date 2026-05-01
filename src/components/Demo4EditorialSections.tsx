@@ -3,6 +3,8 @@
 import Image from "next/image";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { useRef, useState } from "react";
+import Demo4CharacterMarquee from "@/components/demo4/Demo4CharacterMarquee";
+import type { Demo4CharacterMarqueeProps } from "@/components/demo4/Demo4CharacterMarquee";
 
 type TitleVariant = "outline" | "indexed" | "studio" | "frame";
 
@@ -180,6 +182,69 @@ const featuredProjects = [
     category: "Illustration support",
     image: "/sinspired/Artboard-2-copy-1024x850.jpg",
     className: "",
+  },
+];
+
+const characterMarqueeImages = [
+  { src: "/sinspired/character_1-min-1024x970.jpg", alt: "Character 1" },
+  { src: "/sinspired/character_5-min-1024x970.jpg", alt: "Character 2" },
+  { src: "/sinspired/character_6-min-1024x970.jpg", alt: "Character 3" },
+  { src: "/sinspired/character_8-min-1024x970.jpg", alt: "Character 4" },
+  { src: "/sinspired/character_10-min-1024x970.jpg", alt: "Character 5" },
+  { src: "/sinspired/2D-Art-min-947x1024.jpg", alt: "Art piece 1" },
+  { src: "/sinspired/Character-Design-min-822x1024.jpg", alt: "Art piece 2" },
+];
+
+type MarqueeFilter = {
+  id: string;
+  label: string;
+  images: Demo4CharacterMarqueeProps["images"];
+};
+
+const characterMarqueeFilters: MarqueeFilter[] = [
+  {
+    id: "characters",
+    label: "3D Characters",
+    images: [
+      { src: "/sinspired/character_1-min-1024x970.jpg", alt: "Character 1" },
+      { src: "/sinspired/character_5-min-1024x970.jpg", alt: "Character 2" },
+      { src: "/sinspired/character_6-min-1024x970.jpg", alt: "Character 3" },
+      { src: "/sinspired/character_8-min-1024x970.jpg", alt: "Character 4" },
+      { src: "/sinspired/character_10-min-1024x970.jpg", alt: "Character 5" },
+    ],
+  },
+  {
+    id: "props",
+    label: "3D Props",
+    images: [
+      { src: "/sinspired/lab_asset-min-1024x506.jpg", alt: "Prop 1" },
+      { src: "/sinspired/Volcano_Arena_render-min-1024x567.jpg", alt: "Prop 2" },
+      { src: "/sinspired/Artboard-1-copy-13-min-1024x572.jpg", alt: "Scene 1" },
+      { src: "/sinspired/space_arena_source_nature_render_final-min-1024x599.jpg", alt: "Scene 2" },
+      { src: "/sinspired/lab_asset_dark_final-min-1024x506.jpg", alt: "Scene 3" },
+    ],
+  },
+  {
+    id: "backgrounds",
+    label: "Backgrounds",
+    images: [
+      { src: "/sinspired/Artboard-2-copy-4-1024x850.jpg", alt: "Background 1" },
+      { src: "/sinspired/Artboard-2-copy-1024x850.jpg", alt: "Background 2" },
+      { src: "/sinspired/Artboard-1-copy-11-min-1024x572.jpg", alt: "Background 3" },
+      { src: "/sinspired/Artboard-1-copy-13-min-1024x572.jpg", alt: "Background 4" },
+      { src: "/sinspired/space_arena_source_nature_render_final-min-1024x599.jpg", alt: "Background 5" },
+    ],
+  },
+  {
+    id: "design",
+    label: "Character design",
+    images: [
+      { src: "/sinspired/Character-Design-min-822x1024.jpg", alt: "Design 1" },
+      { src: "/sinspired/2D-Art-min-947x1024.jpg", alt: "Design 2" },
+      { src: "/sinspired/promo_amanda.jpg", alt: "Design 3" },
+      { src: "/sinspired/3a7ab9112768871.602fbfbfa228c-882x1024.jpg", alt: "Design 4" },
+      { src: "/sinspired/character_8-min-1024x970.jpg", alt: "Design 5" },
+    ],
   },
 ];
 
@@ -370,6 +435,9 @@ export default function Demo4EditorialSections() {
   const [titleVariant, setTitleVariant] = useState<TitleVariant>("outline");
   const [accentColor, setAccentColor] = useState("#ffb400");
   const [activeProject, setActiveProject] = useState(0);
+  const [activeMarqueeFilter, setActiveMarqueeFilter] = useState<MarqueeFilter>(
+    characterMarqueeFilters[0],
+  );
   const hoverTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const hoverLockUntilRef = useRef(0);
   const { scrollY } = useScroll();
@@ -890,6 +958,60 @@ export default function Demo4EditorialSections() {
               );
             })}
           </div>
+        </div>
+      </section>
+
+      <section className="snap-start border-t border-[#252525] bg-[#0b0b10] py-16 lg:py-20">
+        <div
+          className="mx-auto"
+          style={{ width: "min(var(--layout-width, 85%), 1240px)" }}
+        >
+          <div className="mb-8 flex items-end justify-between gap-6">
+            <div>
+              <h3
+                className="text-3xl font-black uppercase tracking-tight text-white md:text-4xl"
+                style={{ fontFamily: "var(--font-rajdhani)" }}
+              >
+                CHARACTER <span style={{ color: accentColor }}>SHOWCASE</span>
+              </h3>
+              <p className="mt-2 max-w-2xl text-sm leading-6 text-white/60">
+                Hover để chạy chậm lại, và giữ chuột kéo trái/phải để xem thêm.
+              </p>
+            </div>
+            <div className="hidden md:flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.18em] text-white/35">
+              <span className="rounded-full border border-white/10 bg-white/5 px-3 py-2">
+                Drag
+              </span>
+              <span className="rounded-full border border-white/10 bg-white/5 px-3 py-2">
+                Hover slow
+              </span>
+            </div>
+          </div>
+
+          <div className="mb-5 flex flex-wrap items-center gap-2">
+            {characterMarqueeFilters.map((f) => {
+              const isActive = f.id === activeMarqueeFilter.id;
+              return (
+                <button
+                  key={f.id}
+                  onClick={() => setActiveMarqueeFilter(f)}
+                  className={`rounded-full px-4 py-2 text-[11px] font-bold tracking-[0.14em] transition-all ${
+                    isActive
+                      ? "bg-white text-black"
+                      : "border border-white/12 bg-white/5 text-white/60 hover:bg-white/10 hover:text-white"
+                  }`}
+                >
+                  {f.label}
+                </button>
+              );
+            })}
+          </div>
+
+          <Demo4CharacterMarquee
+            images={activeMarqueeFilter.images}
+            baseSpeedMs={5200}
+            hoverSlowdownPct={0.1}
+          />
         </div>
       </section>
     </div>

@@ -37,7 +37,7 @@ export const defaultMediaList: MediaItem[] = [
     name: "MALEFICA",
     label: "Skin 2 — I",
     thumbnail: "/video/CutScene_SE/1big.gif",
-    path: "/video/CutScene_SE/video_summoner_1_skill_1_skin_2.mp4",
+    path: "/video/CutScene_SE/video1.mp4",
     isBgVideo: true,
     isIframe: false,
   },
